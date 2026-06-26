@@ -1,0 +1,95 @@
+
+--- DEBUG ---
+{"text":"Chào bạn! Với ngân sách 0 VNĐ thì việc thuê khách sạn sẽ hơi khó khăn ạ. Tuy nhiên, mình có một vài gợi ý về chỗ ở tiết kiệm chi phí hoặc các lựa chọn thay thế tại Bãi Sau Vũng Tàu để bạn tham khảo nhé:","suggestedLocations":[{"name":"Khu cắm trại/Homestay ven biển","address":"Khu vực Bãi Sau, Vũng Tàu","cost":100000,"duration":"Cả ngày","reason":"Nhiều homestay có phòng tập thể hoặc khu cắm trại với chi phí rất phải chăng, gần gũi thiên nhiên."},{"name":"Nhà nghỉ bình dân","address":"Các đường nhỏ gần Bãi Sau, Vũng Tàu","cost":150000,"duration":"Cả ngày","reason":"Có thể tìm được những nhà nghỉ nhỏ, sạch sẽ với giá hợp lý."},{"name":"Sân chơi công cộng/Khu vực công cộng","address":"Công viên Bãi Sau, Vũng Tàu","cost":0,"duration":"Qua đêm","reason":"Nếu bạn có lều hoặc túi ngủ, có thể cân nhắc tìm một chỗ nghỉ ngơi an toàn tại các khu vực công cộng được phép."}]}
+-----------------
+
+--- ERROR ---
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.
+    at handleResponseNotOk (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:447:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async makeRequest (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:419:9)
+    at async generateContent (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:861:22)
+    at async chatWithPlanAI (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\[root-of-the-server]__0jyoml8._.js:502:24)
+    at async executeActionAndPrepareForRender (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:64:5248)
+    at async W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:64:1986
+    at async handleAction (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:62:25378)
+    at async renderToHTMLOrFlightImpl (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:69:55630)
+    at async doRender (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:792:28)
+    at async AppPageRouteModule.handleResponse (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:71:63567)
+    at async handleResponse (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:1085:32)
+    at async Module.handler (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:1488:20)
+    at async DevServer.renderToResponseWithComponentsImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1454:9)
+    at async DevServer.renderPageComponent (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1506:24)
+    at async DevServer.renderToResponseImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1556:32)
+    at async DevServer.pipeImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1043:25)
+    at async NextNodeServer.handleCatchallRenderRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\next-server.js:338:17)
+    at async DevServer.handleRequestImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:934:17)
+    at async W:\Projects\finhabit-v2\node_modules\next\dist\server\dev\next-dev-server.js:394:20
+    at async Span.traceAsyncFn (W:\Projects\finhabit-v2\node_modules\next\dist\trace\trace.js:164:20)
+    at async DevServer.handleRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\dev\next-dev-server.js:390:24)
+    at async invokeRender (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:266:21)
+    at async handleRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:465:24)
+    at async requestHandlerImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:514:13)
+    at async Server.requestListener (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\start-server.js:225:13)
+-----------------
+
+--- ERROR ---
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.
+    at handleResponseNotOk (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:447:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async makeRequest (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:419:9)
+    at async generateContent (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_0pygsxx._.js:861:22)
+    at async chatWithPlanAI (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\[root-of-the-server]__0jyoml8._.js:502:24)
+    at async executeActionAndPrepareForRender (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:64:5248)
+    at async W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:64:1986
+    at async handleAction (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:62:25378)
+    at async renderToHTMLOrFlightImpl (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:69:55630)
+    at async doRender (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:792:28)
+    at async AppPageRouteModule.handleResponse (W:\Projects\finhabit-v2\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js:71:63567)
+    at async handleResponse (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:1085:32)
+    at async Module.handler (W:\Projects\finhabit-v2\.next\dev\server\chunks\ssr\node_modules_next_dist_esm_0eb4pp7._.js:1488:20)
+    at async DevServer.renderToResponseWithComponentsImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1454:9)
+    at async DevServer.renderPageComponent (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1506:24)
+    at async DevServer.renderToResponseImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1556:32)
+    at async DevServer.pipeImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:1043:25)
+    at async NextNodeServer.handleCatchallRenderRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\next-server.js:338:17)
+    at async DevServer.handleRequestImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\base-server.js:934:17)
+    at async W:\Projects\finhabit-v2\node_modules\next\dist\server\dev\next-dev-server.js:394:20
+    at async Span.traceAsyncFn (W:\Projects\finhabit-v2\node_modules\next\dist\trace\trace.js:164:20)
+    at async DevServer.handleRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\dev\next-dev-server.js:390:24)
+    at async invokeRender (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:266:21)
+    at async handleRequest (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:465:24)
+    at async requestHandlerImpl (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\router-server.js:514:13)
+    at async Server.requestListener (W:\Projects\finhabit-v2\node_modules\next\dist\server\lib\start-server.js:225:13)
+-----------------
+
+--- DEBUG ---
+```json
+{
+  "text": "Chào bạn! Tuyệt vời, mình sẽ gợi ý vài khách sạn ở Bãi Sau Vũng Tàu với ngân sách 500k-1 triệu cho bạn nhé. Lưu ý giá phòng có thể thay đổi tùy thời điểm và loại phòng ạ.",
+  "suggestedLocations": [
+    {
+      "name": "Green Hotel Vung Tau",
+      "address": "09-11 Hoàng Hoa Thám, Phường 2, TP Vũng Tàu",
+      "cost": 700000,
+      "duration": "Thời gian lưu trú",
+      "reason": "Vị trí gần Bãi Sau, phòng ốc sạch sẽ, tiện nghi cơ bản với mức giá hợp lý."
+    },
+    {
+      "name": "Thùy Vân Hotel",
+      "address": "115 Thùy Vân, Phường 2, TP Vũng Tàu",
+      "cost": 650000,
+      "duration": "Thời gian lưu trú",
+      "reason": "Nằm ngay trên đường Thùy Vân, dễ dàng đi bộ ra biển Bãi Sau, phù hợp ngân sách."
+    },
+    {
+      "name": "Aries Hotel Vung Tau",
+      "address": "19 Thùy Vân, Phường 2, TP Vũng Tàu",
+      "cost": 850000,
+      "duration": "Thời gian lưu trú",
+      "reason": "Khách sạn khá mới, thiết kế hiện đại, nhiều phòng có ban công view biển, nằm ngay khu Bãi Sau."
+    }
+  ]
+}
+```
+-----------------
