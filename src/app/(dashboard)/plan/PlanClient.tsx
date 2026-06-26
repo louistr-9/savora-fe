@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useTransition, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -2167,11 +2167,11 @@ export default function PlanClient({ initialPlans, financialContext }: Props) {
                                       const newStart = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
                                       const newEnd = `${((h + 1) % 24).toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
                                       
-                                      setNewLocationForm(f => ({...f, lat, lon, startTime: newStart, endTime: newEnd, isTimeEstimated: true}));
+                                      setNewLocationForm(f => ({...f, lat: String(lat), lon: String(lon), startTime: newStart, endTime: newEnd, isTimeEstimated: true}));
                                       return;
                                     }
                                   }
-                                  setNewLocationForm(f => ({...f, lat, lon}));
+                                  setNewLocationForm(f => ({...f, lat: String(lat), lon: String(lon)}));
                                 }
                               } catch(e) {}
                             }

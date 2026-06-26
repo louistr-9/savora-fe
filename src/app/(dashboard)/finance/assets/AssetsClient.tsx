@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { io } from 'socket.io-client';
@@ -33,6 +33,7 @@ const ASSET_TYPES = {
   stock: { label: 'Chứng khoán', icon: Briefcase, color: '#8B5CF6', bg: 'bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400' },
   crypto: { label: 'Tiền ảo', icon: Bitcoin, color: '#10B981', bg: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' },
   saving: { label: 'Tiết kiệm / Bỏ heo', icon: PiggyBank, color: '#6366F1', bg: 'bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400' },
+  other: { label: 'Khác', icon: Briefcase, color: '#6B7280', bg: 'bg-slate-500/10 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400' },
 };
 
 function formatCurrency(amount: number) {
