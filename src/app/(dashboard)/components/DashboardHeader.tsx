@@ -1,6 +1,7 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 
 import LiveClock from './LiveClock';
+import { NotificationBell } from '@/components/NotificationBell';
 
 interface Props {
   displayName: string;
@@ -44,9 +45,10 @@ export default function DashboardHeader({ displayName, avatarUrl, email }: Props
         </div>
       </div>
 
-      {/* Right: Live Clock */}
+      {/* Right: Live Clock & Notification */}
       <div className="flex items-center gap-3 shrink-0">
         <LiveClock />
+        <NotificationBell />
       </div>
     </div>
   );
