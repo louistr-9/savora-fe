@@ -1,4 +1,5 @@
 import { getCachedUser } from "./auth";
+import { getSession } from "next-auth/react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005";
 
@@ -28,7 +29,14 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     console.log(`[REAL API] Calling ${options.method || 'GET'} ${API_BASE_URL}${endpoint}`);
     
     // Gắn Token vào Request
-    const user = await getCachedUser();
+    let user: any = null;
+    if (typeof window === "undefined") {
+      user = await getCachedUser();
+    } else {
+      const session = await getSession();
+      user = session?.user;
+    }
+    
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...(options.headers as Record<string, string> || {}),
