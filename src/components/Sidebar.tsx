@@ -288,27 +288,24 @@ function SidebarContent({
           );
         })}
 
-
-
-        {/* Admin Dashboard Button */}
-        {(role === 'ADMIN' || email === 'louistran090902@gmail.com') && (
-          <div className="mt-4 pt-4 border-t border-border/50">
-            <Link 
-              href="/admin"
-              onClick={onNavClick}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-all border border-red-500/20"
-            >
-              <div className="p-1.5 rounded-md bg-red-500/10">
-                <User className="w-4 h-4" />
-              </div>
-              <span>Trang Quản Trị</span>
-            </Link>
-          </div>
-        )}
       </nav>
 
       {/* Bottom section */}
       <div className="mt-auto flex flex-col gap-2">
+        {/* Admin Dashboard Button */}
+        {(role === 'ADMIN' || email === process.env.NEXT_PUBLIC_ADMIN_EMAIL || email === 'louistran090902@gmail.com') && (
+          <Link 
+            href="/admin"
+            onClick={onNavClick}
+            className="flex items-center gap-3 px-3 py-2.5 mb-1 rounded-xl text-sm font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all border border-rose-100 dark:bg-rose-500/10 dark:text-rose-500 dark:border-rose-500/20"
+          >
+            <div className="p-1.5 rounded-md bg-rose-100 dark:bg-rose-500/20">
+              <User className="w-4 h-4" />
+            </div>
+            <span>Trang Quản Trị</span>
+          </Link>
+        )}
+
         {/* User card + popup menu */}
         <div ref={menuRef} className="relative">
 

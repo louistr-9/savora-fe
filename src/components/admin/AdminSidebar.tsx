@@ -43,12 +43,7 @@ export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSideb
         </Link>
       </div>
 
-      <div className="px-4 py-4">
-        <Link href="/" className="flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-colors mb-6 px-2">
-          <ArrowLeft className="w-4 h-4" />
-          Về Savora App
-        </Link>
-
+      <div className="px-4 py-4 flex-1 overflow-y-auto">
         {/* Menu Items */}
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => {
@@ -73,6 +68,15 @@ export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSideb
       </div>
 
       <div className="mt-auto border-t border-slate-800 p-4">
+        <Link 
+          href="/" 
+          className="group flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all border border-transparent hover:border-slate-700"
+        >
+          <div className="p-1.5 rounded-md bg-slate-800 text-slate-400 group-hover:text-white">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span>Về Savora App</span>
+        </Link>
         <div className="flex items-center gap-3 px-2 py-3">
           {avatarUrl ? (
             <Image src={avatarUrl} alt="Admin" width={36} height={36} className="rounded-full bg-slate-800" />
