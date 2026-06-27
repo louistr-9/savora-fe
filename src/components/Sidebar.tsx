@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
@@ -39,6 +39,7 @@ interface SidebarProps {
   displayName: string;
   avatarUrl: string | null;
   email: string;
+  role?: string;
 }
 
 // Mini toggle switch for sidebar popup
@@ -286,6 +287,41 @@ function SidebarContent({
             </Link>
           );
         })}
+
+        {/* Cài đặt chung */}
+        <Link 
+          href="/settings"
+          onClick={onNavClick}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            pathname === '/settings' 
+              ? 'bg-emerald-teal/10 text-emerald-teal' 
+              : 'text-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5'
+          }`}
+        >
+          <div className={cn(
+            "p-1.5 rounded-md transition-colors",
+            pathname === '/settings' ? "bg-emerald-teal/10" : "bg-black/5 dark:bg-white/10"
+          )}>
+            <Palette className="w-4 h-4" />
+          </div>
+          <span>Tùy chỉnh & Cài đặt</span>
+        </Link>
+
+        {/* Admin Dashboard Button */}
+        {role === 'ADMIN' && (
+          <div className="mt-4 pt-4 border-t border-border/50">
+            <Link 
+              href="/admin"
+              onClick={onNavClick}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-all border border-red-500/20"
+            >
+              <div className="p-1.5 rounded-md bg-red-500/10">
+                <User className="w-4 h-4" />
+              </div>
+              <span>Trang Quản Trị</span>
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Bottom section */}
@@ -431,7 +467,7 @@ function SidebarContent({
   );
 }
 
-export function Sidebar({ displayName, avatarUrl, email }: SidebarProps) {
+export function Sidebar({ displayName, avatarUrl, email, role }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
