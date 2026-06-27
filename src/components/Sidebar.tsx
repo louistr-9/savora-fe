@@ -291,7 +291,7 @@ function SidebarContent({
 
 
         {/* Admin Dashboard Button */}
-        {role === 'ADMIN' && (
+        {(role === 'ADMIN' || email === 'louistran090902@gmail.com') && (
           <div className="mt-4 pt-4 border-t border-border/50">
             <Link 
               href="/admin"

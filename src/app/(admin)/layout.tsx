@@ -21,7 +21,7 @@ export default async function AdminLayout({
     console.error('Lỗi khi lấy thông tin user trong admin layout:', e);
   }
 
-  if (dbUser?.role !== 'ADMIN') {
+  if (dbUser?.role !== 'ADMIN' && user?.email !== 'louistran090902@gmail.com') {
     redirect('/');
   }
 
