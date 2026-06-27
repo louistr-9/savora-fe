@@ -556,8 +556,42 @@ function AISuggestionCard({ suggestion, type, onSelect }: {
                   loading="lazy"
                   allowFullScreen
                   referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://www.google.com/maps/embed/v1/directions?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&origin=${encodeURIComponent(suggestion.route.waypoints[0])}&destination=${encodeURIComponent(suggestion.route.waypoints[suggestion.route.waypoints.length - 1])}${suggestion.route.waypoints.length > 2 ? `&waypoints=${suggestion.route.waypoints.slice(1, -1).map((w: string) => encodeURIComponent(w)).join('|')}` : ''}`}
+                  src={`https://www.google.com/maps/embed/v1/directions?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&origin=${encodeURIComponent(suggestion.route.waypoints[0]?.name || suggestion.route.waypoints[0])}&destination=${encodeURIComponent(suggestion.route.waypoints[suggestion.route.waypoints.length - 1]?.name || suggestion.route.waypoints[suggestion.route.waypoints.length - 1])}${suggestion.route.waypoints.length > 2 ? `&waypoints=${suggestion.route.waypoints.slice(1, -1).map((w: any) => encodeURIComponent(w.name || w)).join('|')}` : ''}`}
                 ></iframe>
+                
+                {/* External Links for Waypoints */}
+                <div className="mt-3 flex flex-col gap-2">
+                  <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider">Khám phá địa điểm:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {suggestion.route.waypoints.map((w: any, idx: number) => {
+                      const placeName = w.name || w;
+                      if (!placeName) return null;
+                      return (
+                        <div key={idx} className="flex items-center gap-1.5 bg-background/50 p-1.5 rounded-md border border-border/50">
+                          <span className="text-[11px] font-medium text-foreground truncate max-w-[100px]">{placeName}</span>
+                          <a 
+                            href={`https://www.tiktok.com/search?q=${encodeURIComponent(placeName + ' review')}`}
+                            target="_blank" rel="noreferrer"
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-black text-white hover:bg-zinc-800 transition-colors flex items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                            TikTok
+                          </a>
+                          <a 
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`}
+                            target="_blank" rel="noreferrer"
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-teal text-white hover:bg-emerald-teal/90 transition-colors flex items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Map className="w-2.5 h-2.5" />
+                            Maps
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

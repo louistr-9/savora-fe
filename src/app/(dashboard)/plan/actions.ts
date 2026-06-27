@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { fetchAPI } from '@/lib/api';
 import { revalidatePath } from 'next/cache';
@@ -85,7 +85,7 @@ Yêu cầu: Hãy gợi ý 3 phương án lịch trình tham quan/ăn uống khá
 Ước lượng tổng quãng đường di chuyển (km) và tính tiền xăng (giả định xe máy 500đ/km) cho từng lộ trình.
 
 Trả về JSON thuần (không markdown, không backtick):
-{"suggestions":[{"name":"Tên phương án (VD: Lịch trình sống ảo)","emoji":"📸","location":"${destination}","estimated_cost":số_tiền,"cost_breakdown":{"hotel":"Mô tả + giá ước tính","food":"Mô tả + giá","transport":"Mô tả + giá"},"highlights":["điểm 1","điểm 2","điểm 3"],"route":{"waypoints":["Tên điểm cụ thể 1, ${destination}","Tên điểm cụ thể 2, ${destination}"],"distance_km":15,"estimated_gas_cost":7500},"best_time":"Thời điểm lý tưởng","vibe":"Cảm giác/không khí","match_score":85}]}`;
+{"suggestions":[{"name":"Tên phương án (VD: Lịch trình sống ảo)","emoji":"📸","location":"${destination}","estimated_cost":số_tiền,"cost_breakdown":{"hotel":"Mô tả + giá ước tính","food":"Mô tả + giá","transport":"Mô tả + giá"},"highlights":["điểm 1","điểm 2","điểm 3"],"route":{"waypoints":[{"name":"Tên điểm 1","address":"Địa chỉ chi tiết, ${destination}","lat":15.0,"lng":108.0}],"distance_km":15,"estimated_gas_cost":7500},"best_time":"Thời điểm lý tưởng","vibe":"Cảm giác/không khí","match_score":85}]}`;
   } else if (planType === 'dining') {
     const { people = 2, destination = 'quán quen' } = metadata;
     prompt = `Bạn là chuyên gia ẩm thực Việt Nam. Người dùng đang muốn đi ăn/uống tại khu vực ${destination} với số người: ${people}.
@@ -95,7 +95,7 @@ Yêu cầu: Gợi ý 3 lịch trình (Food tour) thực tế tại ${destination
 Ước lượng tổng quãng đường di chuyển (km) và tính tiền xăng (giả định 500đ/km).
 
 Trả về JSON thuần (không markdown, không backtick):
-{"suggestions":[{"name":"Tên Food Tour (VD: Combo nhậu sương sương)","emoji":"🍜","type":"Loại hình","price_range":"X-Y nghìn/người","vibe":"Không khí, mô tả","must_try":["Món/đồ uống gợi ý 1","gợi ý 2"],"route":{"waypoints":["Tên quán 1, Đường, Phường, ${destination}","Tên quán 2, Đường, Phường, ${destination}"],"distance_km":5,"estimated_gas_cost":2500},"tips":"Mẹo đi lại","match_score":90}]}`;
+{"suggestions":[{"name":"Tên Food Tour (VD: Combo nhậu sương sương)","emoji":"🍜","type":"Loại hình","price_range":"X-Y nghìn/người","vibe":"Không khí, mô tả","must_try":["Món/đồ uống gợi ý 1","gợi ý 2"],"route":{"waypoints":[{"name":"Tên quán 1","address":"Đường, Phường, ${destination}","lat":10.7,"lng":106.7}],"distance_km":5,"estimated_gas_cost":2500},"tips":"Mẹo đi lại","match_score":90}]}`;
   }
 
   try {
@@ -114,6 +114,36 @@ Trả về JSON thuần (không markdown, không backtick):
       method: 'POST',
       body: JSON.stringify({ suggestions: parsed }),
     });
+
+    // Background scrape locations
+    try {
+      const placesToSave: any[] = [];
+      if (parsed?.suggestions && Array.isArray(parsed.suggestions)) {
+        parsed.suggestions.forEach((sugg: any) => {
+          if (sugg.route?.waypoints && Array.isArray(sugg.route.waypoints)) {
+            sugg.route.waypoints.forEach((wp: any) => {
+              if (wp.name && wp.address && wp.lat && wp.lng) {
+                placesToSave.push({
+                  name: wp.name,
+                  address: wp.address,
+                  lat: wp.lat,
+                  lng: wp.lng
+                });
+              }
+            });
+          }
+        });
+      }
+      if (placesToSave.length > 0) {
+        // Run in background without awaiting
+        fetchAPI('/places/bulk', {
+          method: 'POST',
+          body: JSON.stringify({ places: placesToSave }),
+        }).catch(err => console.error('Lỗi khi cào dữ liệu AI:', err));
+      }
+    } catch (e) {
+      console.error('Lỗi khi trích xuất dữ liệu AI:', e);
+    }
 
     revalidatePath('/plan');
     return { success: true, suggestions: parsed };
