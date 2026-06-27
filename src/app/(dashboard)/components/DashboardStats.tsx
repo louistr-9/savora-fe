@@ -1,4 +1,4 @@
-﻿import { getBalanceHubData } from '../finance/actions';
+import { getBalanceHubData } from '../finance/actions';
 import StatCardClient from './StatCardClient';
 
 const moneyFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
@@ -29,14 +29,6 @@ export default async function DashboardStats() {
       expenseColor = 'rose';
     }
   }
-
-  const streak = 0;
-  const streakData = {
-    streak: 0,
-    allHabitsDone: false,
-    noneStarted: true,
-    habitCount: 0
-  };
 
   let savingsChangeText = 'Bằng tháng trước';
   let savingsTrend: 'up' | 'down' = 'up';
@@ -84,14 +76,13 @@ export default async function DashboardStats() {
         color="indigo"
       />
       <StatCardClient 
-        type="streak"
-        label="Chuỗi duy trì"
-        value={`${streak} ngày`}
-        change="" 
+        type="balance"
+        label="Thu nhập tháng"
+        value={formatMoney(balanceHub.monthlyIncome)}
+        change="Tổng thu nhập" 
         trend="up"
-        iconName="Flame"
-        color="orange"
-        streakData={streakData}
+        iconName="TrendingUp"
+        color="emerald"
       />
     </div>
   );

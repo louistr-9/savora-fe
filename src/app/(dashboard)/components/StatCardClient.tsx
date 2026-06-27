@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, TrendingUp, Wallet, Flame, PiggyBank, Clock } from 'lucide-react';
@@ -12,17 +12,11 @@ interface StatCardProps {
   trend: 'up' | 'down';
   iconName: string;
   color: 'emerald' | 'teal' | 'rose' | 'indigo' | 'violet' | 'amber' | 'orange';
-  streakData?: {
-    streak: number;
-    allHabitsDone: boolean;
-    noneStarted: boolean;
-    habitCount: number;
-  };
 }
 
 const ICON_MAP: Record<string, any> = { Wallet, TrendingUp, PiggyBank, Flame };
 
-export default function StatCardClient({ type, label, value, change: serverChange, trend, iconName, color: serverColor, streakData }: StatCardProps) {
+export default function StatCardClient({ type, label, value, change: serverChange, trend, iconName, color: serverColor }: StatCardProps) {
   const [showSavings, setShowSavings] = useState(false);
   const [isBalanceVisible, setIsBalanceVisible] = useLocalStorage('isBalanceVisible', false);
   const [isMounted, setIsMounted] = useState(false);
@@ -37,34 +31,6 @@ export default function StatCardClient({ type, label, value, change: serverChang
 
   let change = serverChange;
   let color = serverColor;
-  let isStreakWarning = false;
-
-  if (type === 'streak' && streakData) {
-    const { streak, allHabitsDone, noneStarted, habitCount } = streakData;
-    const milestones = [7, 14, 21, 30, 60, 90, 100, 180, 365];
-    const isMilestone = milestones.includes(streak) && allHabitsDone;
-
-    change = 'Đang duy trì';
-    color = 'orange';
-
-    if (isMilestone) {
-      change = streak >= 30 ? '🏆 Kỷ lục mới!' : '🎉 Tuyệt vời!';
-      color = 'violet';
-    } else if (allHabitsDone) {
-      change = '🔥 Đang cháy';
-      color = 'amber';
-    } else if (liveHour >= 20 && noneStarted) {
-      change = '⚠️ Sắp đứt chuỗi';
-      color = 'rose';
-      isStreakWarning = true;
-    } else if (liveHour >= 20) {
-      change = '⏳ Đừng bỏ lỡ!';
-      color = 'orange';
-      isStreakWarning = true;
-    } else if (habitCount === 0) {
-      change = 'Chưa có thói quen';
-    }
-  }
 
   const Icon = ICON_MAP[iconName] || Wallet;
   const colorMap: Record<string, any> = {
@@ -91,7 +57,7 @@ export default function StatCardClient({ type, label, value, change: serverChang
         <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full ${c.icon} flex items-center justify-center transition-transform group-hover:scale-110 duration-500`}>
           <Icon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={1.5} />
         </div>
-        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold ${c.badge} border border-transparent group-hover:border-current transition-all overflow-hidden ${isStreakWarning ? 'animate-pulse' : ''}`}>
+        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold ${c.badge} border border-transparent group-hover:border-current transition-all overflow-hidden`}>
              {type === 'expense' || type === 'streak' ? change : `${trend === 'up' ? '↑ ' : '↓ '}${change}`}
         </div>
       </div>

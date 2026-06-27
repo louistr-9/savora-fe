@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -270,7 +270,7 @@ export function AIChatbot() {
                         {msg.content}
                       </div>
 
-                      {/* Action Card (Transaction or Habit) */}
+                      {/* Action Card (Transaction or Debt) */}
                       {msg.parseResult && !msg.confirmed && (
                         <motion.div 
                           initial={{ opacity: 0, scale: 0.95 }}

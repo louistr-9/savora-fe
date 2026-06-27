@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -10,6 +10,7 @@ import {
   Moon, Sun, Apple, Zap, Music, Camera, Circle, Eye, EyeOff, PiggyBank
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { NotificationBell } from '@/components/NotificationBell';
 
 const DashboardAreaChart = dynamic(() => import('./DashboardAreaChart'), {
   ssr: false,
@@ -102,13 +103,17 @@ export default function DashboardClient({ displayName, avatarUrl, email, overvie
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-slate-100/50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 rounded-2xl px-5 py-3 shadow-sm backdrop-blur-md">
-          <Clock className="w-4 h-4 text-foreground/30" />
-          <span className="text-xs font-bold text-foreground/60 whitespace-nowrap">
-            {isMounted && currentTime ? (
-              `lúc ${currentTime.toLocaleTimeString('vi-VN', { hour12: false })} ${currentTime.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`
-            ) : 'Đang tải...'}
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 bg-slate-100/50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 rounded-2xl px-5 py-3 shadow-sm backdrop-blur-md">
+            <Clock className="w-4 h-4 text-foreground/30" />
+            <span className="text-xs font-bold text-foreground/60 whitespace-nowrap">
+              {isMounted && currentTime ? (
+                `lúc ${currentTime.toLocaleTimeString('vi-VN', { hour12: false })} ${currentTime.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`
+              ) : 'Đang tải...'}
+            </span>
+          </div>
+          
+          <NotificationBell />
         </div>
       </div>
 

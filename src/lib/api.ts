@@ -1,4 +1,4 @@
-﻿import { getCachedUser } from "./auth";
+import { getCachedUser } from "./auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005";
 
@@ -14,7 +14,6 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   // Các endpoint đã được làm thật ở Backend
   if (
     endpoint.includes("/transactions") || 
-    endpoint.includes("/habits") || 
     endpoint.includes("/assets") || 
     endpoint.includes("/debts") ||
     endpoint.includes("/recurrings") ||
