@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react';
 import { fetchAPI } from '@/lib/api';
 import { Loader2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+}
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<any[]>([]);
