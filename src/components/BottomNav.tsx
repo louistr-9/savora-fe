@@ -154,7 +154,7 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
 
             if (isFinanceTab) {
               const isFinanceActive = pathname === item.href || item.subItems?.some(s => pathname.startsWith(s.href));
-              const shouldPopUp = radialOpen || isFinanceActive;
+              const shouldPopUp = radialOpen || (isFinanceActive && !menuOpen);
 
               return (
                 <div key={item.label} ref={el => { itemRefs.current[index] = el; }} className="relative flex flex-col items-center justify-center h-full w-16">
@@ -264,7 +264,7 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute bottom-[calc(100%+16px)] right-0 w-[280px] bg-card border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50 pb-2 pt-1"
+                        className="absolute bottom-[calc(100%+32px)] right-[-8px] sm:right-0 w-[280px] bg-card border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50 pb-2 pt-1"
                       >
                         {/* Header Info */}
                         <div className="px-4 py-3 border-b border-[var(--border)] bg-slate-50/50">
@@ -380,13 +380,17 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
               );
             }
 
-            // Normal tab popping condition: only pop up if active AND radial menu is NOT open
-            const shouldNormalPopUp = isActive && !radialOpen;
+            // Normal tab popping condition: only pop up if active AND no menus are open
+            const shouldNormalPopUp = isActive && !radialOpen && !menuOpen;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => {
+                  setRadialOpen(false);
+                  setMenuOpen(false);
+                }}
                 className="h-full w-16 transition-colors outline-none"
               >
                 <div ref={el => { itemRefs.current[index] = el; }} className="relative flex flex-col items-center justify-center w-full h-full">
