@@ -73,6 +73,31 @@ export default function AdminDashboard() {
           <p className="text-sm text-foreground/60 mt-1">Xem các địa điểm, tọa độ do AI tự động cào về từ truy vấn của người dùng.</p>
         </a>
       </div>
+
+      <div className="mt-8 border-t border-border pt-8">
+        <h2 className="text-xl font-bold mb-4">Công cụ Kiểm thử (Testing)</h2>
+        <div className="flex flex-wrap gap-4">
+          <button 
+            onClick={async () => {
+              const res = await fetchAPI('/admin/test-holidays');
+              if (res) alert(res.message || 'Thành công!');
+            }}
+            className="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors text-sm font-medium"
+          >
+            Test Thông báo Lễ/Tết (Holidays)
+          </button>
+          
+          <button 
+            onClick={async () => {
+              const res = await fetchAPI('/admin/test-recurrings');
+              if (res) alert(res.message || 'Thành công!');
+            }}
+            className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium"
+          >
+            Test Thông báo Định kỳ (Recurrings)
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
