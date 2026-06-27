@@ -43,7 +43,7 @@ interface SidebarProps {
 }
 
 // Mini toggle switch for sidebar popup
-function MiniSwitch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+export function MiniSwitch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
     <div
       onClick={(e) => { e.stopPropagation(); onChange(); }}
@@ -63,7 +63,7 @@ function MiniSwitch({ checked, onChange }: { checked: boolean; onChange: () => v
 }
 
 // Custom dropdown for theme selection
-function ThemeDropdown({ theme, setTheme }: { theme: string; setTheme: (val: string) => void }) {
+export function ThemeDropdown({ theme, setTheme }: { theme: string; setTheme: (val: string) => void }) {
   const [open, setOpen] = useState(false);
   const options = [
     { id: 'light', label: 'Sáng' },

@@ -62,7 +62,7 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   
   const navRef = useRef<HTMLElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | HTMLAnchorElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLDivElement | HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
   const [maskPos, setMaskPos] = useState<number>(0);
 
   const initials = displayName
