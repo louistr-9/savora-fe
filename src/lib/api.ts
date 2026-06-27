@@ -20,7 +20,10 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     endpoint.includes("/users") ||
     endpoint.includes("/auth") ||
     endpoint.includes("/reports") ||
-    endpoint.includes("/plans")
+    endpoint.includes("/plans") ||
+    endpoint.includes("/admin") ||
+    endpoint.includes("/notifications") ||
+    endpoint.includes("/places")
   ) {
     console.log(`[REAL API] Calling ${options.method || 'GET'} ${API_BASE_URL}${endpoint}`);
     
