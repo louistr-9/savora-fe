@@ -101,27 +101,32 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
     function handleClickOutside(e: MouseEvent) {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
         setRadialOpen(false);
+        setMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close radial menu on route change
+  // Close menus on route change
   useEffect(() => {
     setRadialOpen(false);
+    setMenuOpen(false);
   }, [pathname]);
 
   return (
     <nav ref={navRef} className="fixed bottom-0 left-0 right-0 z-[100] lg:hidden">
-      {/* Overlay for radial menu */}
+      {/* Overlay for radial menu and profile menu */}
       <AnimatePresence>
-        {radialOpen && (
+        {(radialOpen || menuOpen) && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setRadialOpen(false)}
+            onClick={() => {
+              setRadialOpen(false);
+              setMenuOpen(false);
+            }}
             className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
           />
         )}
@@ -217,7 +222,10 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
 
                   {/* Main Toggle Button */}
                   <button
-                    onClick={() => setRadialOpen(!radialOpen)}
+                    onClick={() => {
+                      setRadialOpen(!radialOpen);
+                      setMenuOpen(false);
+                    }}
                     className="relative flex flex-col items-center justify-center w-full h-full outline-none z-50"
                   >
                     <motion.div 
@@ -339,7 +347,10 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
 
                   <button
                     ref={el => { itemRefs.current[index] = el; }}
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={() => {
+                      setMenuOpen(!menuOpen);
+                      setRadialOpen(false);
+                    }}
                     className="relative flex flex-col items-center justify-center w-full h-full outline-none z-50"
                   >
                     <motion.div 
