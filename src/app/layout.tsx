@@ -15,11 +15,16 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+import { getCachedUser } from '@/lib/auth';
+import { SessionPing } from '@/components/SessionPing';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCachedUser();
+
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
@@ -34,6 +39,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         <DialogProvider>
           {children}
+          {user && <SessionPing />}
         </DialogProvider>
       </body>
     </html>

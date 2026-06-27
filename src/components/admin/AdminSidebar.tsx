@@ -1,0 +1,99 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, Users, Map, Settings, ArrowLeft, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { signOut } from 'next-auth/react';
+import Image from 'next/image';
+
+interface AdminSidebarProps {
+  displayName?: string;
+  avatarUrl?: string | null;
+  email?: string;
+  role?: string;
+}
+
+export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSidebarProps) {
+  const pathname = usePathname();
+
+  const menuItems = [
+    { label: 'Tổng quan', icon: LayoutDashboard, href: '/admin' },
+    { label: 'Người dùng', icon: Users, href: '/admin/users' },
+    { label: 'Địa điểm (Places)', icon: Map, href: '/admin/places' },
+    { label: 'Cài đặt hệ thống', icon: Settings, href: '/admin/settings' },
+  ];
+
+  const initials = displayName
+    ?.split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'A';
+
+  return (
+    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-300 hidden lg:flex border-r border-slate-800">
+      {/* Brand & App Return */}
+      <div className="h-[72px] flex items-center justify-between px-6 border-b border-slate-800">
+        <Link href="/admin" className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-teal flex items-center justify-center">
+            <span className="text-white font-bold text-lg">S</span>
+          </div>
+          <span className="text-lg font-bold text-white tracking-tight">Admin<span className="text-emerald-teal">Panel</span></span>
+        </Link>
+      </div>
+
+      <div className="px-4 py-4">
+        <Link href="/" className="flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-colors mb-6 px-2">
+          <ArrowLeft className="w-4 h-4" />
+          Về Savora App
+        </Link>
+
+        {/* Menu Items */}
+        <nav className="flex-1 space-y-1">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  isActive 
+                    ? "bg-slate-800 text-white" 
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                )}
+              >
+                <item.icon className={cn("w-5 h-5", isActive ? "text-emerald-teal" : "text-slate-500")} />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="mt-auto border-t border-slate-800 p-4">
+        <div className="flex items-center gap-3 px-2 py-3">
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt="Admin" width={36} height={36} className="rounded-full bg-slate-800" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-emerald-teal flex items-center justify-center text-white font-bold text-sm">
+              {initials}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white truncate">{displayName}</p>
+            <p className="text-xs text-slate-400 truncate">{email}</p>
+          </div>
+          <button 
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-colors"
+            title="Đăng xuất"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
