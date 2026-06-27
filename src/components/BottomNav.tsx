@@ -1,11 +1,16 @@
-﻿'use client';
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X, User, Bell, Palette, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { signOut } from 'next-auth/react';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { ThemeDropdown } from './Sidebar';
+import { MiniSwitch } from './Sidebar';
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -45,16 +50,27 @@ const navItems = [
     ]
   },
   { label: 'Kế Hoạch', icon: Map, href: '/plan' },
-  { label: 'Cài đặt', icon: Settings, href: '/settings' },
+  { label: 'Tài khoản', icon: User, href: '/profile', isProfile: true },
 ];
 
-export function BottomNav() {
+export function BottomNav({ displayName, avatarUrl, email }: { displayName?: string, avatarUrl?: string | null, email?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [radialOpen, setRadialOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState(true);
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLDivElement | HTMLAnchorElement | null)[]>([]);
   const [maskPos, setMaskPos] = useState<number>(0);
+
+  const initials = displayName
+    ?.split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'U';
 
   useEffect(() => {
     const updateMask = () => {
@@ -218,6 +234,132 @@ export function BottomNav() {
                       className={cn(
                         "text-[10px] font-medium transition-all duration-300 absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center whitespace-nowrap",
                         shouldPopUp ? "opacity-0 translate-y-4" : "text-slate-500 dark:text-slate-400"
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                </div>
+              );
+            }
+
+            // Handle Profile tab
+            if (item.isProfile) {
+              const isProfileActive = menuOpen;
+              return (
+                <div key="profile" className="relative h-full w-16 outline-none">
+                  {/* Profile Popup Menu */}
+                  <AnimatePresence>
+                    {menuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute bottom-[calc(100%+16px)] right-0 w-[280px] bg-card border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50 pb-2 pt-1"
+                      >
+                        {/* Header Info */}
+                        <div className="px-4 py-3 border-b border-[var(--border)] bg-slate-50/50">
+                          <p className="text-sm font-bold text-foreground truncate">{displayName}</p>
+                          <p className="text-xs text-foreground/50 truncate">{email}</p>
+                        </div>
+                        
+                        {/* Menu Items */}
+                        <div className="max-h-[60vh] overflow-y-auto">
+                          <Link href="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center">
+                              <User className="w-4 h-4 text-indigo-500" strokeWidth={1.5} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-foreground">Tài khoản</p>
+                              <p className="text-[11px] text-foreground/50">Quản lý cá nhân</p>
+                            </div>
+                          </Link>
+
+                          <div className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-emerald-teal/10 flex items-center justify-center">
+                                <Bell className="w-4 h-4 text-emerald-teal" strokeWidth={1.5} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Thông báo đẩy</p>
+                                <p className="text-[11px] text-foreground/50">Nhắc nhở nhập liệu</p>
+                              </div>
+                            </div>
+                            <MiniSwitch checked={notifications} onChange={() => setNotifications(p => !p)} />
+                          </div>
+
+                          <div className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+                                <Palette className="w-4 h-4 text-orange-500" strokeWidth={1.5} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Giao diện</p>
+                              </div>
+                            </div>
+                            <ThemeDropdown theme={theme} setTheme={setTheme} />
+                          </div>
+
+                          <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-deep-violet/10 flex items-center justify-center">
+                              <CreditCard className="w-4 h-4 text-deep-violet" strokeWidth={1.5} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-foreground">Gói đăng ký</p>
+                              <p className="text-[11px] text-foreground/50">Free Plan</p>
+                            </div>
+                            <span className="text-[10px] font-bold bg-emerald-teal/10 text-emerald-teal px-2 py-1 rounded-full">
+                              Free
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Footer (Logout) */}
+                        <div className="px-2 pt-2 border-t border-[var(--border)]">
+                          {email ? (
+                            <button
+                              onClick={() => signOut({ callbackUrl: '/login' })}
+                              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" /> Đăng xuất
+                            </button>
+                          ) : (
+                            <Link
+                              href="/login"
+                              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-emerald-teal bg-emerald-teal/10 hover:bg-emerald-teal/20 rounded-xl transition-colors"
+                            >
+                              Đăng nhập
+                            </Link>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <button
+                    ref={el => { itemRefs.current[index] = el; }}
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="relative flex flex-col items-center justify-center w-full h-full outline-none z-50"
+                  >
+                    <motion.div 
+                      className={cn(
+                        "flex items-center justify-center rounded-full transition-all duration-300 relative z-50 overflow-hidden",
+                        isProfileActive ? "shadow-xl w-14 h-14 -translate-y-5 border-2 border-emerald-teal" : "w-8 h-8"
+                      )}
+                    >
+                      {avatarUrl ? (
+                        <Image src={avatarUrl} alt={displayName || 'User'} fill className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold text-xs">
+                          {initials}
+                        </div>
+                      )}
+                    </motion.div>
+                    <span 
+                      className={cn(
+                        "text-[10px] font-medium transition-all duration-300 absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center whitespace-nowrap",
+                        isProfileActive ? "opacity-0 translate-y-4" : "text-slate-500 dark:text-slate-400"
                       )}
                     >
                       {item.label}
