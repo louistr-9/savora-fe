@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -58,7 +58,7 @@ function LoginContent() {
           {/* Savora Logo */}
           <div className="relative w-16 h-16 mb-4">
             <Image 
-              src="/logo.png" 
+              src="/logo-savora.png" 
               alt="Savora Logo" 
               fill
               className="object-contain drop-shadow-md"

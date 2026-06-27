@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { DialogProvider } from '@/components/ui/DialogProvider';
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   title: "Savora — Smart Finance & Life Planning",
   description: "Savora giúp bạn quản lý tài chính thông minh và lên kế hoạch cuộc sống phù hợp ngân sách của bạn.",
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/logo-savora.png',
+    apple: '/logo-savora.png',
   }
 };
 

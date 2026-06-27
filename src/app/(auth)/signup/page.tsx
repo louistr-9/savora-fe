@@ -1,4 +1,4 @@
-﻿import { signup } from './actions';
+import { signup } from './actions';
 import { Shield, User, Mail, Lock, Landmark, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,7 +22,7 @@ export default async function SignupPage({
         {/* Logo & Header */}
         <div className="flex flex-col items-center mb-6">
           <div className="mb-4">
-            <Image src="/logo.png" alt="Savora Logo" width={64} height={64} className="object-contain drop-shadow-md mx-auto" />
+            <Image src="/logo-savora.png" alt="Savora Logo" width={64} height={64} className="object-contain drop-shadow-md mx-auto" />
           </div>
           <h1 className="text-2xl font-heading font-bold text-foreground text-center">Bắt đầu hành trình mới</h1>
           <p className="text-sm text-foreground/60 mt-1 text-center">Tạo tài khoản Savora để quản lý tài chính thông minh</p>
