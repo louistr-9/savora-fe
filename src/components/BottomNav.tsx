@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { signOut } from 'next-auth/react';
-import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ThemeDropdown } from './Sidebar';
 import { MiniSwitch } from './Sidebar';
 
