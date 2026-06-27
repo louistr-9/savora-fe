@@ -202,7 +202,7 @@ function SubMenuItem({
 
 // Sidebar content — dùng chung cho cả Desktop và Mobile Drawer
 function SidebarContent({
-  displayName, avatarUrl, email, pathname, onNavClick
+  displayName, avatarUrl, email, role, pathname, onNavClick
 }: SidebarProps & { pathname: string; onNavClick?: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
