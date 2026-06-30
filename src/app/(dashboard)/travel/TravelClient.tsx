@@ -817,7 +817,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
     days: '3',
     people: '2',
     // Funding
-    fundingSourceType: 'available' as 'available' | 'asset' | 'borrowed',
+    fundingSourceType: 'available' as 'available' | 'asset' | 'borrowed' | 'none',
     fundingAssetId: '',
   });
 
@@ -828,7 +828,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
 
   // Compute funding source limit and color
   const budgetVal = Number(parseMoneyInput(formData.budget)) || 0;
-  let fundingMax = 0;
+  let fundingMax = Infinity;
   if (formData.fundingSourceType === 'available') fundingMax = financialContext.netBalance;
   else if (formData.fundingSourceType === 'asset') fundingMax = financialContext.assets?.find(a => a.id === formData.fundingAssetId)?.value || 0;
 
@@ -1211,7 +1211,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
     
     viewingFundingMax = viewingPlan.metadata?.fundingSourceType === 'available' 
       ? financialContext.netBalance 
-      : viewingPlan.metadata?.fundingSourceType === 'borrowed' 
+      : (viewingPlan.metadata?.fundingSourceType === 'borrowed' || viewingPlan.metadata?.fundingSourceType === 'none')
         ? Infinity 
         : (financialContext.assets?.find(a => a.id === viewingPlan.metadata?.fundingAssetId)?.value || 0);
 
@@ -1438,7 +1438,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                           value={formData.fundingSourceType === 'asset' ? formData.fundingAssetId : formData.fundingSourceType}
                           onChange={e => {
                             const val = e.target.value;
-                            if (val === 'available' || val === 'borrowed') {
+                            if (val === 'available' || val === 'borrowed' || val === 'none') {
                               setFormData(f => ({ ...f, fundingSourceType: val as any, fundingAssetId: '', budget: '0' }));
                             } else {
                               setFormData(f => ({ ...f, fundingSourceType: 'asset', fundingAssetId: val, budget: '0' }));
@@ -1446,6 +1446,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                           }}
                           className={cn("w-full px-4 py-3 rounded-xl border focus:outline-none text-sm transition-colors", fundingColorClass)}
                         >
+                          <option value="none">Trống (Không có nguồn tiền)</option>
                           <optgroup label="Khuyên dùng">
                             <option value="available">Số dư khả dụng ({formatCurrency(financialContext.netBalance)})</option>
                           </optgroup>
