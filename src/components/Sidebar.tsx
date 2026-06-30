@@ -458,15 +458,7 @@ export function Sidebar({ displayName, avatarUrl, email, role }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile: Hamburger trigger button */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="fixed top-4 right-4 z-50 lg:hidden h-10 w-10 rounded-xl bg-card border border-[var(--border)] shadow-soft flex items-center justify-center hover:bg-foreground/5 transition-colors"
-        aria-label="Mở menu"
-      >
-        <Menu className="h-5 w-5 text-foreground/70" />
-      </button>
-
+      {/* Mobile: Hamburger trigger button (Removed per request) */}
       {/* Mobile: Drawer overlay */}
       <AnimatePresence>
         {mobileOpen && (
