@@ -356,21 +356,27 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
       )}
 
       {/* Header */}
-      <div className="flex items-start gap-3 mb-4">
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-blue-50 dark:bg-blue-900/20">
-          <TypeIcon className="w-5 h-5 text-blue-500" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-foreground text-[15px] leading-tight truncate pr-6">{plan.title}</h3>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <p className="text-xs font-medium text-blue-500 shrink-0">Du lịch</p>
-            {plan.metadata?.departureLocation && plan.metadata?.destination && (
-              <p className="text-[11px] text-foreground/40 italic truncate">
-                • {plan.metadata.departureLocation} ➝ {plan.metadata.destination}
-              </p>
-            )}
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-blue-50 dark:bg-blue-900/20">
+            <TypeIcon className="w-5 h-5 text-blue-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-foreground text-[15px] leading-tight truncate pr-2">{plan.title}</h3>
+            <p className="text-xs font-medium mt-0.5 text-blue-500 shrink-0">Du lịch</p>
           </div>
         </div>
+        
+        {plan.metadata?.departureLocation && plan.metadata?.destination && (
+          <div className="flex flex-col items-end shrink-0 text-right max-w-[120px]">
+            <span className="text-[11px] font-bold text-foreground/70 truncate w-full" title={plan.metadata.departureLocation}>
+              {plan.metadata.departureLocation.split(',')[0]}
+            </span>
+            <span className="text-[10px] font-medium text-foreground/40 flex items-center gap-1 truncate w-full justify-end" title={plan.metadata.destination}>
+              <span className="text-blue-400">➝</span> {plan.metadata.destination.split(',')[0]}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Budget + Progress */}
