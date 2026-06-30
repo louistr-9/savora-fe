@@ -383,7 +383,9 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-foreground/70 truncate max-w-[80px]">{item.name}</span>
                   </div>
-                  <span className="font-semibold">{((item.value / totalValue) * 100).toFixed(0)}%</span>
+                  <span className="font-semibold">
+                    {((item.value / totalValue) * 100) < 1 ? '<1%' : `${((item.value / totalValue) * 100).toFixed(0)}%`}
+                  </span>
                 </div>
               ))}
             </div>
