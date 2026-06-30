@@ -61,6 +61,9 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
   const [notifications, setNotifications] = useState(true);
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   
+  const [avatarError, setAvatarError] = useState(false);
+  useEffect(() => { setAvatarError(false); }, [avatarUrl]);
+
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLDivElement | HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
   const [maskPos, setMaskPos] = useState<number>(0);
@@ -359,8 +362,8 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
                         isProfileActive ? "shadow-xl w-14 h-14 -translate-y-5 border-2 border-emerald-teal" : "w-8 h-8"
                       )}
                     >
-                      {avatarUrl ? (
-                        <Image src={avatarUrl} alt={displayName || 'User'} fill className="object-cover" />
+                      {avatarUrl && !avatarError ? (
+                        <Image src={avatarUrl} alt={displayName || 'User'} fill className="object-cover" onError={() => setAvatarError(true)} />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold text-xs">
                           {initials}

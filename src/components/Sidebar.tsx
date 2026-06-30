@@ -209,6 +209,9 @@ function SidebarContent({
   const menuRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useLocalStorage('theme', 'light');
 
+  const [avatarError, setAvatarError] = useState(false);
+  useEffect(() => { setAvatarError(false); }, [avatarUrl]);
+
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.classList.remove('light', 'dark', 'warm');
@@ -386,8 +389,8 @@ function SidebarContent({
           >
             {/* Avatar */}
             <div className="h-10 w-10 rounded-full overflow-hidden shrink-0 relative">
-              {avatarUrl ? (
-                <Image src={avatarUrl} alt={displayName} fill className="object-cover" />
+              {avatarUrl && !avatarError ? (
+                <Image src={avatarUrl} alt={displayName} fill className="object-cover" onError={() => setAvatarError(true)} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold font-heading text-sm">
                   {initials}
