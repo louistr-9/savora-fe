@@ -629,7 +629,8 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
   const [createdPlanId, setCreatedPlanId] = useState<string | null>(null);
   const [viewingPlan, setViewingPlan] = useState<Plan | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-
+  const [replacingLocId, setReplacingLocId] = useState<string | null>(null);
+  const [replaceText, setReplaceText] = useState('');
   // Manual Itinerary state
   const [activeDay, setActiveDay] = useState(1);
   const [previewMobileView, setPreviewMobileView] = useState<'timeline'|'map'>('timeline');
@@ -2228,17 +2229,6 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                     />
                   </div>
 
-                  {/* Alternatives */}
-                  <div>
-                    <label className="block text-[11px] font-bold text-foreground/50 mb-2 uppercase tracking-wider">Địa điểm thay thế (Nếu có)</label>
-                    <textarea
-                      value={newLocationForm.alternatives || ''}
-                      onChange={e => setNewLocationForm(f => ({...f, alternatives: e.target.value}))}
-                      placeholder="VD: Nếu mưa thì đi uống cafe ở..."
-                      className="w-full px-4 py-3 rounded-2xl border border-[var(--border)] bg-transparent focus:outline-none focus:border-blue-500 text-sm font-medium resize-none h-[72px]"
-                    />
-                  </div>
-
                   {/* Divider */}
                   <div className="h-px bg-[var(--border)] w-full"></div>
 
@@ -2635,7 +2625,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                             let originStr = '';
                             if (!prevLoc) {
                               originStr = viewingPlan.metadata?.departureLocation || '';
-                            } else if (!prevLoc.isSkipped) {
+                            } else if (!prevLoc.isSkipped && !prevLoc.isReplaced) {
                               originStr = prevLoc.lat && prevLoc.lon ? `${prevLoc.lat},${prevLoc.lon}` : prevLoc.address || prevLoc.name;
                             }
 
@@ -2670,6 +2660,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                                     <Wallet className="w-4 h-4" /> {formatCurrency(loc.actualCost || loc.cost)}
                                     {loc.isDone && <span className="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full print:border print:border-emerald-300">Hoàn thành</span>}
                                     {loc.isSkipped && <span className="text-[10px] px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full print:border print:border-slate-300">Đã bỏ qua</span>}
+                                    {loc.isReplaced && <span className="text-[10px] px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-full border border-indigo-200 dark:border-indigo-800">Đã thay thế: {loc.alternatives}</span>}
                                     {loc.isDone && loc.actualCost !== loc.cost && (
                                       <span className="text-xs text-foreground/40 line-through ml-2">{formatCurrency(loc.cost)}</span>
                                     )}
@@ -2715,6 +2706,15 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                                           className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-xs font-bold transition-colors"
                                         >
                                           <X className="w-4 h-4" /> Bỏ qua
+                                        </button>
+                                        <button 
+                                          onClick={() => {
+                                            setReplacingLocId(loc.id);
+                                            setReplaceText('');
+                                          }}
+                                          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-xl text-xs font-bold transition-colors"
+                                        >
+                                          <Shuffle className="w-4 h-4" /> Thay thế
                                         </button>
                                       </>
                                     ) : loc.isDone ? (
@@ -2782,6 +2782,63 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                                         <RefreshCw className="w-4 h-4" /> Hoàn tác
                                       </button>
                                     ) : null}
+
+                                    {replacingLocId === loc.id && (
+                                      <div className="mt-3 w-full p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-900/30 animate-in fade-in slide-in-from-top-2">
+                                        <p className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 mb-2 uppercase">Nhập địa điểm thay thế:</p>
+                                        <input 
+                                          autoFocus
+                                          type="text" 
+                                          value={replaceText}
+                                          onChange={e => setReplaceText(e.target.value)}
+                                          placeholder="VD: Quán cafe bên cạnh..."
+                                          className="w-full text-sm px-3 py-2.5 rounded-lg border border-indigo-200 dark:border-indigo-800/50 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 mb-3"
+                                          onKeyDown={e => {
+                                            if (e.key === 'Enter' && replaceText.trim()) {
+                                              const newPlan = { ...viewingPlan };
+                                              const locs = newPlan.metadata.itinerary[dayNum] || [];
+                                              const updatedLocs = locs.map((l: any) => l.id === loc.id ? { ...l, isReplaced: true, alternatives: replaceText.trim(), isDone: false, isSkipped: false } : l);
+                                              newPlan.metadata.itinerary[dayNum] = updatedLocs;
+                                              setViewingPlan(newPlan);
+                                              setReplacingLocId(null);
+                                              startTransition(async () => {
+                                                try {
+                                                  await updatePlan(viewingPlan.id, { metadata: newPlan.metadata });
+                                                } catch {}
+                                              });
+                                            }
+                                          }}
+                                        />
+                                        <div className="flex items-center gap-2">
+                                          <button 
+                                            onClick={() => {
+                                              if (!replaceText.trim()) return;
+                                              const newPlan = { ...viewingPlan };
+                                              const locs = newPlan.metadata.itinerary[dayNum] || [];
+                                              const updatedLocs = locs.map((l: any) => l.id === loc.id ? { ...l, isReplaced: true, alternatives: replaceText.trim(), isDone: false, isSkipped: false } : l);
+                                              newPlan.metadata.itinerary[dayNum] = updatedLocs;
+                                              setViewingPlan(newPlan);
+                                              setReplacingLocId(null);
+                                              
+                                              startTransition(async () => {
+                                                try {
+                                                  await updatePlan(viewingPlan.id, { metadata: newPlan.metadata });
+                                                } catch {}
+                                              });
+                                            }}
+                                            className="px-4 py-2 bg-indigo-500 text-white text-xs font-bold rounded-lg hover:bg-indigo-600 transition-colors"
+                                          >
+                                            Lưu thay thế
+                                          </button>
+                                          <button 
+                                            onClick={() => setReplacingLocId(null)}
+                                            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+                                          >
+                                            Hủy
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
 
