@@ -3,9 +3,11 @@
 import { usePathname } from 'next/navigation';
 import { Menu, Search, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAdminLayout } from './AdminLayoutContext';
 
 export function AdminHeader() {
   const pathname = usePathname();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useAdminLayout();
 
   const getBreadcrumbs = () => {
     const paths = pathname.split('/').filter(Boolean);
@@ -23,7 +25,10 @@ export function AdminHeader() {
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-[var(--border)] h-[72px] flex items-center px-4 sm:px-8">
       <div className="flex items-center gap-4 flex-1">
-        <button className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden">
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+        >
           <Menu className="w-5 h-5" />
         </button>
         

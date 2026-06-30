@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Map, Settings, ArrowLeft, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Map, Settings, ArrowLeft, LogOut, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { useAdminLayout } from './AdminLayoutContext';
 
 interface AdminSidebarProps {
   displayName?: string;
@@ -16,6 +17,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useAdminLayout();
 
   const menuItems = [
     { label: 'Tổng quan', icon: LayoutDashboard, href: '/admin' },
@@ -32,16 +34,34 @@ export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSideb
     .toUpperCase() || 'A';
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-300 hidden lg:flex border-r border-slate-800">
-      {/* Brand & App Return */}
-      <div className="h-[72px] flex items-center justify-between px-6 border-b border-slate-800">
-        <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-teal flex items-center justify-center">
-            <span className="text-white font-bold text-lg">S</span>
-          </div>
-          <span className="text-lg font-bold text-white tracking-tight">Admin<span className="text-emerald-teal">Panel</span></span>
-        </Link>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-300 border-r border-slate-800 lg:translate-x-0",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        {/* Brand & App Return */}
+        <div className="h-[72px] flex items-center justify-between px-6 border-b border-slate-800">
+          <Link href="/admin" className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-emerald-teal flex items-center justify-center">
+              <span className="text-white font-bold text-lg">S</span>
+            </div>
+            <span className="text-lg font-bold text-white tracking-tight">Admin<span className="text-emerald-teal">Panel</span></span>
+          </Link>
+          <button 
+            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
       <div className="px-4 py-4 flex-1 overflow-y-auto">
         {/* Menu Items */}
@@ -99,5 +119,6 @@ export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSideb
         </div>
       </div>
     </aside>
+    </>
   );
 }

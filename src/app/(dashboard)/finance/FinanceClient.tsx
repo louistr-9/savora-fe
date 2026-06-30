@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -277,7 +277,7 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
       setSelectedCategory(transactionType === 'income' ? 'Thu nhập khác' : 'Chi tiêu khác');
     } catch (e: any) {
       if (e.message?.includes('đăng nhập') || e.message?.includes('Unauthorized')) {
-        setAuthModalOpen(true);
+        showAlert("Phiên đăng nhập không hợp lệ. Vui lòng Đăng xuất và Đăng nhập lại!");
       } else {
         showAlert("Lỗi: " + (e.message || "Đã có lỗi xảy ra"));
       }
@@ -339,7 +339,7 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
       setPendingDeleteId(null);
     } catch (e: any) {
       if (e.message?.includes('đăng nhập')) {
-        setAuthModalOpen(true);
+        showAlert("Phiên đăng nhập không hợp lệ. Vui lòng Đăng xuất và Đăng nhập lại!");
       } else {
         showAlert("Lỗi: " + (e.message || "Đã có lỗi xảy ra"));
       }

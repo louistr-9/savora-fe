@@ -70,9 +70,13 @@ function LoginContent() {
         </div>
 
         <div className="bg-card/60 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-6 shadow-soft">
-          {/* Error Message */}
+          {/* Error / Success Message */}
           {error && (
-            <div className="mb-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 p-3 rounded-lg text-sm font-medium border border-rose-200 dark:border-rose-800/30 text-center">
+            <div className={`mb-4 p-3 rounded-lg text-sm font-medium border text-center ${
+              error.toLowerCase().includes('thành công') 
+                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/30' 
+                : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/30'
+            }`}>
               {error}
             </div>
           )}

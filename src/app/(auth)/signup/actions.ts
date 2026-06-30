@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -38,7 +38,7 @@ export async function signup(formData: FormData) {
       throw new Error(data.message || 'Lỗi đăng ký tài khoản');
     }
 
-    redirectUrl = '/login?message=' + encodeURIComponent('Đăng ký thành công! Hãy đăng nhập.');
+    redirectUrl = '/verify-email?email=' + encodeURIComponent(email);
   } catch (error: any) {
     redirectUrl = '/signup?message=' + encodeURIComponent(error.message || 'Lỗi tạo tài khoản');
   }
