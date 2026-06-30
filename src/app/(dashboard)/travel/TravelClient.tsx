@@ -2591,7 +2591,21 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                             <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-4 space-y-10 print:border-gray-200">
                           {dayLocations.map((loc: any, idx: number) => {
                             const nextLoc = dayLocations[idx + 1];
-                            const prevLoc = idx > 0 ? dayLocations[idx - 1] : null;
+                            let prevLoc = idx > 0 ? dayLocations[idx - 1] : null;
+                            if (!prevLoc && dayNum > 1) {
+                              for (let prevDay = dayNum - 1; prevDay >= 1; prevDay--) {
+                                const prevDayLocs = viewingPlan.metadata?.itinerary?.[prevDay] || [];
+                                if (prevDayLocs.length > 0) {
+                                  prevLoc = prevDayLocs[prevDayLocs.length - 1];
+                                  break;
+                                }
+                              }
+                            }
+                            
+                            const originStr = prevLoc 
+                              ? (prevLoc.lat && prevLoc.lon ? `${prevLoc.lat},${prevLoc.lon}` : prevLoc.address || prevLoc.name)
+                              : viewingPlan.metadata?.departureLocation || '';
+
                             let distanceInfo = null;
                             if (nextLoc && loc.lat && loc.lon && nextLoc.lat && nextLoc.lon) {
                               const R = 6371; // km
@@ -2632,7 +2646,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                                   <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
                                     {!loc.isSkipped && (
                                       <a 
-                                        href={`https://www.google.com/maps/dir/?api=1${prevLoc ? `&origin=${encodeURIComponent(prevLoc.lat && prevLoc.lon ? `${prevLoc.lat},${prevLoc.lon}` : prevLoc.address || prevLoc.name)}` : (idx === 0 && viewingPlan.metadata?.departureLocation ? `&origin=${encodeURIComponent(viewingPlan.metadata.departureLocation)}` : '')}&destination=${encodeURIComponent(loc.lat && loc.lon ? `${loc.lat},${loc.lon}` : loc.address || loc.name)}`} 
+                                        href={`https://www.google.com/maps/dir/?api=1${originStr ? `&origin=${encodeURIComponent(originStr)}` : ''}&destination=${encodeURIComponent(loc.lat && loc.lon ? `${loc.lat},${loc.lon}` : loc.address || loc.name)}`} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors shadow-sm shadow-blue-500/20"
