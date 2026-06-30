@@ -184,8 +184,10 @@ function VerifyEmailForm() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="text-center mt-20 text-slate-500">Đang tải...</div>}>
-      <VerifyEmailForm />
-    </Suspense>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Suspense fallback={<div className="text-center text-slate-500">Đang tải...</div>}>
+        <VerifyEmailForm />
+      </Suspense>
+    </div>
   );
 }
