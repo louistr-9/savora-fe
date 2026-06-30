@@ -1267,7 +1267,7 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
                           </span>
                           <div className="flex flex-col items-center mt-auto w-full gap-[2px]">
                             {net !== 0 ? (
-                              <span className={`text-[8px] font-bold w-full truncate px-0.5 ${net > 0 ? 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 rounded' : net < 0 ? 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 rounded' : 'text-slate-500'}`}>
+                              <span className={`text-[8px] font-bold w-full truncate text-center px-0.5 ${net > 0 ? 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 rounded' : net < 0 ? 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 rounded' : 'text-slate-500'}`}>
                                 {net > 0 ? '+' : ''}{formatCompact(net)}
                               </span>
                             ) : (
