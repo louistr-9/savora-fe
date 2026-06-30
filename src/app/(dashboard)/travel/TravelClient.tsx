@@ -1058,9 +1058,11 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
       cost: Number(parseMoneyInput(newLocationForm.cost)) || 0,
       startTime: newLocationForm.startTime,
       endTime: newLocationForm.endTime,
+      isTimeEstimated: newLocationForm.isTimeEstimated,
       lat,
       lon,
-      note: newLocationForm.note?.trim() || ''
+      note: newLocationForm.note?.trim() || '',
+      alternatives: newLocationForm.alternatives?.trim() || ''
     };
     
     let newItinerary = { ...itinerary };
@@ -1080,7 +1082,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
     setViewingPlan(updatedPlan);
     setPlans(prev => prev.map(p => p.id === viewingPlan.id ? updatedPlan : p));
     setShowAddLocationModal(false);
-    setNewLocationForm({ name: '', place_id: '', photo_url: '', address: '', note: '', cost: '', day: activeDay, startTime: '09:00', endTime: '10:00', lat: '', lon: '' });
+    setNewLocationForm({ name: '', place_id: '', photo_url: '', address: '', note: '', alternatives: '', cost: '', day: activeDay, startTime: '09:00', endTime: '10:00', lat: '', lon: '' });
     
     try {
       await updatePlan(viewingPlan.id, { metadata: newMetadata });
@@ -1646,6 +1648,22 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                             </div>
                           </div>
                           
+                          {loc.note && (
+                            <div className="mt-3 text-sm text-foreground/70 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl border border-amber-100 dark:border-amber-900/30 break-words print:text-xs">
+                              <span className="font-bold text-amber-700 dark:text-amber-500 mr-2">Ghi chú:</span> 
+                              {loc.note}
+                            </div>
+                          )}
+
+                          {loc.alternatives && (
+                            <div className="mt-2 text-sm text-foreground/70 bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/30 break-words print:text-xs">
+                              <span className="font-bold text-indigo-700 dark:text-indigo-400 mr-2 flex items-center gap-1.5 inline-flex">
+                                <Shuffle className="w-4 h-4" /> Thay thế:
+                              </span> 
+                              {loc.alternatives}
+                            </div>
+                          )}
+
                           <div className="mt-2.5 flex items-center justify-between">
                             <div className="text-xs text-foreground/60 line-clamp-1 pr-4">
                               <MapPin className="inline w-3 h-3 mr-1" />
@@ -1670,7 +1688,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                           h = (h + 1) % 24;
                           nextEnd = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
                         }
-                        setNewLocationForm({ id: undefined, name: '', cost: '', address: '', note: '', photo_url: '', place_id: '', lat: '', lon: '', day: activeDay, startTime: nextStart, endTime: nextEnd }); 
+                        setNewLocationForm({ id: undefined, name: '', cost: '', address: '', note: '', alternatives: '', photo_url: '', place_id: '', lat: '', lon: '', day: activeDay, startTime: nextStart, endTime: nextEnd }); 
                         setShowAddLocationModal(true); 
                       }}
                       className="w-full mt-4 py-4 rounded-2xl border-2 border-dashed border-emerald-200 dark:border-emerald-800/50 text-[13px] font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors flex items-center justify-center gap-2"
@@ -1792,6 +1810,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                                 lat: place.lat || '',
                                 lon: place.lon || '',
                                 note: '',
+                                alternatives: '',
                                 cost: '',
                                 day: activeDay,
                                 startTime: nextStart,
@@ -2602,9 +2621,12 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                               }
                             }
                             
-                            const originStr = prevLoc 
-                              ? (prevLoc.lat && prevLoc.lon ? `${prevLoc.lat},${prevLoc.lon}` : prevLoc.address || prevLoc.name)
-                              : viewingPlan.metadata?.departureLocation || '';
+                            let originStr = '';
+                            if (!prevLoc) {
+                              originStr = viewingPlan.metadata?.departureLocation || '';
+                            } else if (!prevLoc.isSkipped) {
+                              originStr = prevLoc.lat && prevLoc.lon ? `${prevLoc.lat},${prevLoc.lon}` : prevLoc.address || prevLoc.name;
+                            }
 
                             let distanceInfo = null;
                             if (nextLoc && loc.lat && loc.lon && nextLoc.lat && nextLoc.lon) {
