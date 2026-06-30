@@ -5,6 +5,7 @@ import { DialogProvider } from '@/components/ui/DialogProvider';
 import { getCachedUser } from '@/lib/auth';
 import { SessionPing } from '@/components/SessionPing';
 import InstallPWA from '@/components/InstallPWA';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-sans', display: 'swap', preload: true });
 const outfit = Outfit({ subsets: ["latin"], variable: '--font-heading', display: 'swap', preload: true });
@@ -40,10 +41,9 @@ export default async function RootLayout({
 
   return (
     <html lang="vi" suppressHydrationWarning>
-      <head>
-        <script
+        <Script
           id="theme-script"
-          suppressHydrationWarning
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               try{const s=localStorage.getItem('theme');const t=s?JSON.parse(s):'light';if(t==='dark'||t==='warm')document.documentElement.classList.add(t);}catch(e){}
@@ -57,7 +57,6 @@ export default async function RootLayout({
             `,
           }}
         />
-      </head>
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         <DialogProvider>
           {children}
