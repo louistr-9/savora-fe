@@ -704,22 +704,22 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                           {asset.target_amount ? (
                             <div className="space-y-2">
                               <div className="flex justify-between text-[11px] font-medium">
-                                <span>{formatCurrency(sData.totalAmount)} / {formatCurrency(asset.target_amount)}</span>
-                                <span className="text-emerald-600">{Math.min(100, Math.round((sData.totalAmount / asset.target_amount) * 100))}%</span>
+                                <span>{formatCurrency(asset.value)} / {formatCurrency(asset.target_amount)}</span>
+                                <span className="text-emerald-600">{Math.min(100, Math.round((asset.value / asset.target_amount) * 100))}%</span>
                               </div>
                               <div className="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, (sData.totalAmount / asset.target_amount) * 100)}%` }} />
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, (asset.value / asset.target_amount) * 100)}%` }} />
                               </div>
                             </div>
                           ) : (
                             <div>
                               <div className="flex justify-between text-xs font-semibold mb-2 text-slate-700 dark:text-slate-300">
                                 <span>🔥 Đã bỏ {sData.totalCount} lần</span>
-                                <span>Tổng: {formatCurrency(sData.totalAmount)}</span>
+                                <span>Tổng: {formatCurrency(asset.value)}</span>
                               </div>
                               <div className="space-y-1.5 border-t border-slate-200 dark:border-slate-700 pt-2">
                                 {sData.history.length === 0 ? (
-                                  <p className="text-[10px] text-center text-slate-400">Chưa có giao dịch nào</p>
+                                  <p className="text-[10px] text-center text-slate-400 py-1">Chưa có giao dịch nạp thêm</p>
                                 ) : sData.history.map((tx: any, idx: number) => (
                                   <div key={idx} className="flex justify-between text-[10px]">
                                     <span className="text-emerald-600 font-medium">+{formatCurrency(tx.amount)}</span>
