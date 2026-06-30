@@ -1061,18 +1061,18 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
                               setSelectedDate(date.getDate());
                               setListFilter('today');
                             }}
-                            className={`min-h-[3rem] sm:min-h-[3.5rem] flex flex-col items-center justify-center py-1 px-0.5 cursor-pointer transition-all rounded-lg bg-card ${isSelected ? 'border-2 border-emerald-teal shadow-sm' : 'border border-[var(--border)] hover:border-emerald-teal/50'} ${isTodayDate && !isSelected ? 'border border-emerald-teal/60' : ''} ${!isCurrentMonth ? 'opacity-40 bg-slate-50 dark:bg-slate-800/50' : ''}`}
+                            className={`min-h-[3rem] sm:min-h-[3.5rem] min-w-0 overflow-hidden w-full flex flex-col items-center justify-center py-1 px-[1px] cursor-pointer transition-all rounded-lg bg-card ${isSelected ? 'border-2 border-emerald-teal shadow-sm' : 'border border-[var(--border)] hover:border-emerald-teal/50'} ${isTodayDate && !isSelected ? 'border border-emerald-teal/60' : ''} ${!isCurrentMonth ? 'opacity-40 bg-slate-50 dark:bg-slate-800/50' : ''}`}
                           >
                             <span className={`text-[11px] sm:text-[13px] font-bold ${isSelected ? 'text-emerald-teal' : 'text-foreground'}`}>
                               {dayNum}
                             </span>
                             
                             {isCurrentMonth ? (
-                              <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 ${net > 0 ? 'text-emerald-500' : net < 0 ? 'text-rose-500' : 'text-transparent'}`}>
+                              <span className={`w-full truncate text-center text-[9px] sm:text-[10px] font-bold mt-0.5 ${net > 0 ? 'text-emerald-500' : net < 0 ? 'text-rose-500' : 'text-transparent'}`}>
                                 {net !== 0 ? (net > 0 ? '+' : '') + formatCompact(net) : '0'}
                               </span>
                             ) : (
-                              <span className="text-[9px] sm:text-[10px] font-bold mt-0.5 text-transparent">0</span>
+                              <span className="w-full truncate text-center text-[9px] sm:text-[10px] font-bold mt-0.5 text-transparent">0</span>
                             )}
 
                             <div className="h-1.5 mt-0.5 flex items-center justify-center gap-0.5">
@@ -1260,7 +1260,7 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
                             setSelectedDate(dayNum);
                             setListFilter('today');
                           }}
-                          className={`min-h-[3.5rem] flex flex-col items-center justify-start pt-1.5 pb-1 px-0.5 cursor-pointer transition-all rounded-xl ${isSelected ? 'bg-emerald-teal/10 border-2 border-emerald-teal' : 'bg-card border border-[var(--border)]'} ${isTodayDate && !isSelected ? 'border-emerald-teal/40' : ''}`}
+                          className={`min-h-[3.5rem] min-w-0 overflow-hidden w-full flex flex-col items-center justify-start pt-1.5 pb-1 px-[1px] cursor-pointer transition-all rounded-xl ${isSelected ? 'bg-emerald-teal/10 border-2 border-emerald-teal' : 'bg-card border border-[var(--border)]'} ${isTodayDate && !isSelected ? 'border-emerald-teal/40' : ''}`}
                         >
                           <span className={`text-[12px] font-bold ${isSelected ? 'text-emerald-teal' : 'text-foreground'}`}>
                             {dayNum}
