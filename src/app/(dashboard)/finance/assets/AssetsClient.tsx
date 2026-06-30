@@ -513,13 +513,18 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                     {/* Total Value */}
                     <h3 className="text-xl font-bold font-heading mb-1">{formatCurrency(asset.value)}</h3>
 
-                    {/* Profit: show both % and VND amount */}
+                    {/* Purchase Price & Profit */}
                     {asset.purchase_price > 0 && (
-                      <div className={cn("flex items-center gap-2 text-xs font-medium mb-3", isProfitable ? "text-emerald-600" : "text-rose-600")}>
-                        {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        <span>{isProfitable ? '+' : ''}{profitPercent.toFixed(2)}%</span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-medium mb-3">
+                        <span className="text-foreground/50">
+                          Giá mua: {formatCurrency(asset.purchase_price)}
+                        </span>
                         <span className="text-foreground/30">•</span>
-                        <span>{isProfitable ? '+' : ''}{formatCurrency(profit)}</span>
+                        <div className={cn("flex items-center gap-1", isProfitable ? "text-emerald-600" : "text-rose-600")}>
+                          {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                          <span>{isProfitable ? '+' : ''}{profitPercent.toFixed(2)}%</span>
+                          <span className="ml-0.5">({isProfitable ? '+' : ''}{formatCurrency(profit)})</span>
+                        </div>
                       </div>
                     )}
 
@@ -533,12 +538,7 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                           </div>
                         </>
                       )}
-                      {asset.purchase_price > 0 && (
-                        <div className="flex justify-between col-span-2">
-                          <span className="text-foreground/50">Giá vốn</span>
-                          <span className="font-medium text-foreground/80">{formatCurrency(asset.purchase_price)}</span>
-                        </div>
-                      )}
+
                       {asset.quantity && asset.quantity > 0 && (
                         <div className="flex justify-between col-span-2">
                           <span className="text-foreground/50">Số lượng</span>
