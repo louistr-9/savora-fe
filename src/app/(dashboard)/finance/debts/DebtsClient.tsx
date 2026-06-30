@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import type { DebtTypeInterface } from './actions';
@@ -48,6 +48,7 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Form states
   const [addForm, setAddForm] = useState({
@@ -64,8 +65,9 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Derived state
-  const lentDebts = useMemo(() => debts.filter(d => d.type === 'lent'), [debts]);
-  const borrowedDebts = useMemo(() => debts.filter(d => d.type === 'borrowed'), [debts]);
+  const lentDebts = useMemo(() => debts.filter(d => d.type === 'lent' && d.status !== 'archived'), [debts]);
+  const borrowedDebts = useMemo(() => debts.filter(d => d.type === 'borrowed' && d.status !== 'archived'), [debts]);
+  const archivedDebts = useMemo(() => debts.filter(d => d.status === 'archived').sort((a, b) => new Date(b.updated_at || b.date).getTime() - new Date(a.updated_at || a.date).getTime()), [debts]);
 
   const totalLent = lentDebts.filter(d => d.status === 'active').reduce((acc, d) => acc + (d.amount - d.paid_amount), 0);
   const totalBorrowed = borrowedDebts.filter(d => d.status === 'active').reduce((acc, d) => acc + (d.amount - d.paid_amount), 0);
@@ -75,7 +77,7 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
   const activeDebtsBorrowedCount = borrowedDebts.filter(d => d.status === 'active').length;
 
   const displayedList = useMemo(() => {
-    let list = activeTab === 'all' ? debts : activeTab === 'lent' ? lentDebts : borrowedDebts;
+    let list = activeTab === 'all' ? debts.filter(d => d.status !== 'archived') : activeTab === 'lent' ? lentDebts : borrowedDebts;
     
     if (statusFilter !== 'all') {
       list = list.filter(d => d.status === statusFilter);
@@ -86,7 +88,19 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
       list = list.filter(d => d.contact_name.toLowerCase().includes(term) || d.notes?.toLowerCase().includes(term));
     }
     
-    return list;
+    return [...list].sort((a, b) => {
+      // Đẩy completed xuống dưới cùng
+      if (a.status === 'active' && b.status === 'completed') return -1;
+      if (a.status === 'completed' && b.status === 'active') return 1;
+      
+      // Nếu cùng completed, ưu tiên mới hoàn thành lên trước
+      if (a.status === 'completed' && b.status === 'completed') {
+        return new Date(b.updated_at || b.date).getTime() - new Date(a.updated_at || a.date).getTime();
+      }
+      
+      // Nếu cùng active, ưu tiên mới tạo lên trước
+      return new Date(b.created_at || b.date).getTime() - new Date(a.created_at || a.date).getTime();
+    });
   }, [activeTab, debts, lentDebts, borrowedDebts, statusFilter, searchTerm]);
 
   // Handlers
@@ -166,17 +180,29 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
 
   const handleDelete = async (id: string) => {
     setOpenMenuId(null);
-    const isConfirmed = await showConfirm('Bạn có chắc chắn muốn xóa khoản này? Hành động này không thể hoàn tác.', { destructive: true });
+    const isConfirmed = await showConfirm('Bạn có chắc chắn muốn đưa khoản này vào lịch sử (Archive)?', { destructive: true });
+    if (isConfirmed) {
+      const res = await updateDebt(id, { status: 'archived' });
+      if (res.success) {
+        setDebts(prev => prev.map(d => d.id === id ? { ...d, status: 'archived', updated_at: new Date().toISOString() } : d));
+      } else {
+        if (res.error?.includes('đăng nhập') || res.error?.includes('Unauthorized')) {
+          setAuthModalOpen(true);
+        } else {
+          await showAlert('Lỗi khi lưu trữ: ' + res.error);
+        }
+      }
+    }
+  };
+
+  const handleHardDelete = async (id: string) => {
+    const isConfirmed = await showConfirm('Xóa vĩnh viễn khoản này khỏi hệ thống? Hành động này không thể hoàn tác.', { destructive: true });
     if (isConfirmed) {
       const res = await deleteDebt(id);
       if (res.success) {
         setDebts(prev => prev.filter(d => d.id !== id));
       } else {
-        if (res.error?.includes('đăng nhập') || res.error?.includes('Unauthorized')) {
-          setAuthModalOpen(true);
-        } else {
-          await showAlert('Lỗi khi xóa: ' + res.error);
-        }
+        await showAlert('Lỗi khi xóa: ' + (res.error || 'Unknown error'));
       }
     }
   };
@@ -228,7 +254,10 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
           <p className="text-sm text-foreground/60 mt-1">Quản lý các khoản nợ phải trả và khoản tiền bạn đã cho người khác vay.</p>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-card text-sm font-medium hover:bg-slate-50 transition-colors">
+          <button 
+            onClick={() => setShowHistoryModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-card text-sm font-medium hover:bg-slate-50 transition-colors"
+          >
             <FileText className="w-4 h-4" />
             Lịch sử tất cả
           </button>
@@ -289,7 +318,7 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
                 activeTab === 'all' ? "bg-white dark:bg-slate-700 text-foreground shadow-sm" : "text-foreground/60 hover:text-foreground"
               )}
             >
-              Tất cả ({debts.length})
+              Tất cả ({debts.filter(d => d.status !== 'archived').length})
             </button>
             <button
               onClick={() => setActiveTab('lent')}
@@ -359,7 +388,10 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
               const isCompleted = debt.status === 'completed';
 
               return (
-                <div key={debt.id} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-[var(--border)] hover:border-indigo-200 transition-colors bg-slate-50/50 dark:bg-slate-800/20">
+                <div key={debt.id} className={cn(
+                  "flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-[var(--border)] transition-colors bg-slate-50/50 dark:bg-slate-800/20",
+                  !isCompleted && "hover:border-indigo-200"
+                )}>
                   {/* Left info */}
                   <div className="flex items-center gap-3 md:w-1/4 shrink-0">
                     <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex flex-col items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -625,6 +657,65 @@ export default function DebtsClient({ initialDebts }: DebtsClientProps) {
           </div>
         )}
       </AnimatePresence>
+      {/* History Modal */}
+      <AnimatePresence>
+        {showHistoryModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowHistoryModal(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative bg-card w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              <div className="flex justify-between items-center p-4 md:p-6 border-b border-[var(--border)] shrink-0">
+                <h3 className="text-xl font-heading font-bold text-foreground flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-foreground/50" />
+                  Lịch sử lưu trữ
+                </h3>
+                <button onClick={() => setShowHistoryModal(false)} className="p-2 text-foreground/50 hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-4 overflow-y-auto space-y-3">
+                {archivedDebts.length === 0 ? (
+                  <div className="text-center py-12 text-foreground/50">
+                    Chưa có khoản nợ nào trong lịch sử.
+                  </div>
+                ) : (
+                  archivedDebts.map(debt => (
+                    <div key={debt.id} className="flex justify-between items-center p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/30">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={cn("text-[10px] px-2 py-0.5 rounded font-medium", debt.type === 'lent' ? 'bg-indigo-100 text-indigo-700' : 'bg-rose-100 text-rose-700')}>
+                            {debt.type === 'lent' ? 'Cho vay' : 'Tôi nợ'}
+                          </span>
+                          <span className="font-semibold text-foreground">{debt.contact_name}</span>
+                        </div>
+                        <p className="text-sm font-medium mt-1">{formatCurrency(debt.amount)}</p>
+                        <p className="text-xs text-foreground/50 mt-0.5">
+                          {debt.status === 'archived' ? 'Đã lưu trữ vào: ' : 'Hoàn thành vào: '}
+                          {new Date(debt.updated_at || debt.created_at).toLocaleDateString('vi-VN')}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleHardDelete(debt.id)}
+                        className="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                        title="Xóa vĩnh viễn"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </div>
   );

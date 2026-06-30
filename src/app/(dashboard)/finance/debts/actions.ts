@@ -1,10 +1,10 @@
-﻿'use server';
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { fetchAPI } from '@/lib/api';
 
 export type DebtType = 'lent' | 'borrowed';
-export type DebtStatus = 'active' | 'completed';
+export type DebtStatus = 'active' | 'completed' | 'archived';
 
 export interface DebtTypeInterface {
   id: string;
@@ -19,6 +19,7 @@ export interface DebtTypeInterface {
   group_name: string | null;
   status: DebtStatus;
   created_at: string;
+  updated_at?: string;
 }
 
 export async function getDebts() {
@@ -34,7 +35,8 @@ export async function getDebts() {
       amount: Number(d.amount) || 0,
       due_date: d.dueDate,
       group_name: d.groupName,
-      created_at: d.createdAt
+      created_at: d.createdAt,
+      updated_at: d.updatedAt
     })) as unknown as DebtTypeInterface[];
   } catch (error) {
     console.error('Error fetching debts:', error);
@@ -87,6 +89,7 @@ export async function addDebt(data: {
       due_date: res.data.dueDate,
       group_name: res.data.groupName,
       created_at: res.data.createdAt,
+      updated_at: res.data.updatedAt,
       amount: Number(res.data.amount) || 0
     };
 
@@ -97,7 +100,7 @@ export async function addDebt(data: {
   }
 }
 
-export async function updateDebt(id: string, data: {
+export async function updateDebt(id: string, data: Partial<{
   type: DebtType;
   contact_name: string;
   amount: number;
@@ -105,7 +108,8 @@ export async function updateDebt(id: string, data: {
   due_date?: string | null;
   notes?: string | null;
   group_name?: string | null;
-}) {
+  status?: DebtStatus;
+}>) {
   try {
     await fetchAPI(`/debts/${id}`, {
       method: 'PUT',
