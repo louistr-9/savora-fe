@@ -362,7 +362,14 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-foreground text-[15px] leading-tight truncate pr-6">{plan.title}</h3>
-          <p className="text-xs font-medium mt-0.5 text-blue-500">Du lịch</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <p className="text-xs font-medium text-blue-500 shrink-0">Du lịch</p>
+            {plan.metadata?.departureLocation && plan.metadata?.destination && (
+              <p className="text-[11px] text-foreground/40 italic truncate">
+                • {plan.metadata.departureLocation} ➝ {plan.metadata.destination}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
