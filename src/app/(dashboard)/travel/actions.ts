@@ -38,7 +38,7 @@ export async function createPlan(data: Partial<Plan>): Promise<Plan> {
     method: 'POST',
     body: JSON.stringify(data),
   });
-  revalidatePath('/plan');
+  revalidatePath('/travel');
   return res.data || res;
 }
 
@@ -47,13 +47,13 @@ export async function updatePlan(id: string, data: Partial<Plan>): Promise<Plan>
     method: 'PUT',
     body: JSON.stringify(data),
   });
-  revalidatePath('/plan');
+  revalidatePath('/travel');
   return res.data || res;
 }
 
 export async function deletePlan(id: string): Promise<void> {
   await fetchAPI(`/plans/${id}`, { method: 'DELETE' });
-  revalidatePath('/plan');
+  revalidatePath('/travel');
 }
 
 export async function generateAISuggestions(
@@ -145,7 +145,7 @@ Trả về JSON thuần (không markdown, không backtick):
       console.error('Lỗi khi trích xuất dữ liệu AI:', e);
     }
 
-    revalidatePath('/plan');
+    revalidatePath('/travel');
     return { success: true, suggestions: parsed };
   } catch (error: any) {
     console.error('Lỗi Gemini:', error);

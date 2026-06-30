@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
       { label: 'Net Worth', href: '/net-worth', isBeta: true },
     ]
   },
-  { label: 'Kế Hoạch', icon: Map, href: '/plan' },
+  { label: 'Lịch trình', icon: Map, href: '/travel' },
   { label: 'Báo cáo', icon: BarChart3, href: '/report' },
 ];
 

@@ -40,15 +40,7 @@ interface Props {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const PLAN_TYPES = [
-  { id: 'travel' as PlanType, label: 'Du lịch', icon: Plane, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', solid: 'bg-blue-500', border: 'border-blue-200 dark:border-blue-700', emoji: '✈️' },
-  { id: 'dining' as PlanType, label: 'Ăn uống', icon: UtensilsCrossed, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20', solid: 'bg-orange-500', border: 'border-orange-200 dark:border-orange-700', emoji: '🍜' },
-  { id: 'purchase' as PlanType, label: 'Mua sắm', icon: ShoppingBag, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20', solid: 'bg-purple-500', border: 'border-purple-200 dark:border-purple-700', emoji: '🛍️' },
-  { id: 'other' as PlanType, label: 'Khác', icon: Target, color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800/50', solid: 'bg-slate-500', border: 'border-slate-200 dark:border-slate-700', emoji: '📌' },
-];
-
 const TRAVEL_STYLES = ['Biển', 'Núi & Thác', 'Phố cổ & Văn hóa', 'Nước ngoài', 'Hàn Quốc', 'Nhật Bản', 'Thái Lan'];
-const DINING_STYLES = ['Nhậu bình dân', 'Quán vỉa hè', 'Nhà hàng', 'Buffet', 'Cafe & Trà sữa', 'Lẩu & Nướng'];
 
 function formatNumber(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}tr`;
@@ -320,8 +312,7 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
   onClick: (p: Plan) => void;
   onViewTracking?: (p: Plan) => void;
 }) {
-  const typeInfo = PLAN_TYPES.find(t => t.id === plan.type) || PLAN_TYPES[3];
-  const TypeIcon = typeInfo.icon;
+  const TypeIcon = Plane;
   
   let displayBudget = Number(plan.budget) || 0;
   if (displayBudget === 0 && plan.metadata?.itinerary) {
@@ -609,7 +600,7 @@ function AISuggestionCard({ suggestion, type, onSelect }: {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function PlanClient({ initialPlans, financialContext }: Props) {
+export default function TravelClient({ initialPlans, financialContext }: Props) {
   const router = useRouter();
   const { showAlert, showConfirm } = useDialog();
   const [isPending, startTransition] = useTransition();
@@ -1191,7 +1182,7 @@ export default function PlanClient({ initialPlans, financialContext }: Props) {
     });
   }
 
-  const typeInfo = PLAN_TYPES.find(t => t.id === formData.type)!;
+
 
   // Dynamic calculation for viewing plan budget status
   let viewingTotalCost = 0;
@@ -1326,25 +1317,6 @@ export default function PlanClient({ initialPlans, financialContext }: Props) {
 
       {/* ── FILTER TABS ── */}
       <div className="flex items-center gap-2 mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-        {[{ id: 'all', label: 'Tất cả', count: plans.length }, ...PLAN_TYPES.map(t => ({ id: t.id, label: t.label, count: plans.filter(p => p.type === t.id).length }))].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setFilter(tab.id as any)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap shrink-0',
-              filter === tab.id
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-card border border-[var(--border)] text-foreground/50 hover:border-blue-200'
-            )}
-          >
-            {tab.label}
-            <span className={cn(
-              'text-[10px] font-bold px-1.5 py-0.5 rounded-full',
-              filter === tab.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-white/10 text-foreground/40'
-            )}>{tab.count}</span>
-          </button>
-        ))}
-      </div>
 
       {/* ── PLAN GRID ── */}
       {filteredPlans.length === 0 ? (
@@ -1414,28 +1386,7 @@ export default function PlanClient({ initialPlans, financialContext }: Props) {
                 {/* STEP 1 — Form */}
                 {step === 1 && (
                   <>
-                    {/* Plan type selector */}
-                    {!editingPlan && (
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground/60 mb-2 uppercase tracking-wider">Loại kế hoạch</label>
-                        <div className="grid grid-cols-4 gap-2">
-                          {PLAN_TYPES.map(t => (
-                            <button
-                              key={t.id}
-                              type="button"
-                              onClick={() => setFormData(f => ({ ...f, type: t.id }))}
-                              className={cn(
-                                'flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 transition-all',
-                                formData.type === t.id ? `${t.border} ${t.bg}` : 'border-transparent bg-slate-50 dark:bg-white/5 hover:bg-slate-100'
-                              )}
-                            >
-                              <span className="text-lg">{t.emoji}</span>
-                              <span className={cn('text-[11px] font-semibold', formData.type === t.id ? t.color : 'text-foreground/50')}>{t.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+
 
                     {/* Destination & Details */}
                     {formData.type === 'travel' && (
