@@ -41,6 +41,7 @@ export default async function RootLayout({
 
   return (
     <html lang="vi" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         <Script
           id="theme-script"
           strategy="beforeInteractive"
@@ -57,7 +58,6 @@ export default async function RootLayout({
             `,
           }}
         />
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         <DialogProvider>
           {children}
           {user && <SessionPing />}
