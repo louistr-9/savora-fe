@@ -292,6 +292,10 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
     setTransactionType(t.type);
     setSelectedCategory(t.category);
     
+    // Switch to form tab on mobile and scroll to top
+    setMobileTab('nhap');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     const absVal = Math.abs(t.amount);
     setAmountDisplay(formatInputAmount(absVal.toString()));
     setSelectedSavingAssetId(t.asset_id || '');
