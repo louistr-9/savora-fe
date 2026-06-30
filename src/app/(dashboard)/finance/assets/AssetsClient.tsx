@@ -63,13 +63,57 @@ function generateDummyChartData() {
   return data;
 }
 
+// Safe date formatter
+function formatDate(dateStr: string | undefined | null): string {
+  if (!dateStr) return 'N/A';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'N/A';
+  return d.toLocaleDateString('vi-VN');
+}
+
 export default function AssetsClient({ initialAssets, cashBalance }: { initialAssets: AssetType[], cashBalance: number }) {
   const [assets, setAssets] = useState<AssetType[]>(initialAssets);
   const [filterType, setFilterType] = useState<string>('all');
   const { showAlert, showConfirm } = useDialog();
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // WebSocket connection for live market updates
+  const [marketData, setMarketData] = useState<Record<string, { price: number, change24h: number, sparkline7d: number[] }>>({});
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      const dynamicAssets = initialAssets.filter(a => (a.type === 'stock' || a.type === 'crypto' || a.type === 'gold') && a.symbol);
+      const uniqueSymbols = Array.from(new Set(dynamicAssets.map(a => `${a.type}:${a.symbol}`)));
+      
+      for (const key of uniqueSymbols) {
+        const [type, symbol] = key.split(':');
+        try {
+          const res = await fetch(`/api/assets/live-price?type=${type}&symbol=${symbol}`);
+          const data = await res.json();
+          if (data.price) {
+            setMarketData(prev => ({
+              ...prev,
+              [key]: {
+                price: data.price,
+                change24h: data.change24h || 0,
+                sparkline7d: data.sparkline7d || []
+              }
+            }));
+            
+            // Also sync the live value silently without triggering a reload
+            setAssets(prevAssets => prevAssets.map(a => {
+              if (a.type === type && a.symbol === symbol && a.quantity) {
+                return { ...a, value: data.price * a.quantity };
+              }
+              return a;
+            }));
+          }
+        } catch (e) {
+          console.error('Failed to fetch market data for', symbol);
+        }
+      }
+    };
+    fetchMarketData();
+  }, [initialAssets]);
   useEffect(() => {
     const socket = io('http://localhost:5005'); // Connect to Backend
 
@@ -132,6 +176,58 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
     autoSaveFrequency: 'monthly' as 'daily' | 'weekly' | 'monthly',
     autoSaveDay: '1',
   });
+
+  const [editAsset, setEditAsset] = useState<AssetType | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    symbol: '',
+    quantity: '',
+    purchase_price: '',
+    value: ''
+  });
+
+  const openEditModal = (asset: AssetType) => {
+    setEditAsset(asset);
+    setEditForm({
+      name: asset.name,
+      symbol: asset.symbol || '',
+      quantity: asset.quantity ? asset.quantity.toString() : '',
+      purchase_price: asset.purchase_price ? asset.purchase_price.toString() : '',
+      value: asset.value ? asset.value.toString() : ''
+    });
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editAsset) return;
+    setIsEditing(true);
+    try {
+      const { updateAsset } = await import('./actions');
+      const updateData: any = {
+        name: editForm.name,
+        symbol: editForm.symbol,
+        purchase_price: editForm.purchase_price ? Number(parseMoneyInput(editForm.purchase_price)) : 0,
+      };
+      if (editAsset.type === 'crypto' || editAsset.type === 'stock' || editAsset.type === 'gold') {
+        updateData.quantity = editForm.quantity ? Number(parseMoneyInput(editForm.quantity)) : 0;
+      } else {
+        updateData.value = editForm.value ? Number(parseMoneyInput(editForm.value)) : 0;
+      }
+
+      const res = await updateAsset(editAsset.id, updateData);
+      if (res.success) {
+        setAssets(prev => prev.map(a => a.id === editAsset.id ? { ...a, ...updateData } : a));
+        setEditAsset(null);
+      } else {
+        showAlert('Có lỗi xảy ra: ' + res.error);
+      }
+    } catch (err: any) {
+      showAlert('Có lỗi xảy ra: ' + err.message);
+    } finally {
+      setIsEditing(false);
+    }
+  };
 
   const isSaving = addForm.type === 'saving';
 
@@ -462,7 +558,13 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                 const profit = asset.value - asset.purchase_price;
                 const profitPercent = asset.purchase_price > 0 ? (profit / asset.purchase_price) * 100 : 0;
                 const isProfitable = profit >= 0;
-                const chartData = generateDummyChartData();
+                
+                const mData = marketData[`${asset.type}:${asset.symbol}`];
+                const isMarketLoaded = !!mData;
+                const chartData = mData?.sparkline7d?.length > 0 
+                  ? mData.sparkline7d.map(val => ({ value: val }))
+                  : null;
+                const change24h = mData?.change24h || 0;
 
                 let displayQty = asset.quantity || 0;
                 let unitLabel = asset.type === 'gold' ? 'lượng' : asset.type === 'stock' ? 'CP' : asset.type === 'crypto' ? asset.symbol || 'coin' : '';
@@ -503,30 +605,49 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                           <p className="text-xs text-foreground/50">{config.label}</p>
                         </div>
                       </div>
-                      <button 
-                        onClick={() => handleDelete(asset.id)}
-                        className="p-1.5 hover:bg-rose-100 text-foreground/30 hover:text-rose-600 dark:hover:bg-rose-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        title="Xóa tài sản"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => openEditModal(asset)}
+                          className="p-1.5 hover:bg-slate-100 text-foreground/30 hover:text-foreground dark:hover:bg-slate-800 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          title="Chỉnh sửa tài sản"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(asset.id)}
+                          className="p-1.5 hover:bg-rose-100 text-foreground/30 hover:text-rose-600 dark:hover:bg-rose-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          title="Xóa tài sản"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Total Value */}
-                    <h3 className="text-xl font-bold font-heading mb-1">{formatCurrency(asset.value)}</h3>
+                    <div className="mb-3">
+                      <h3 className="text-xl font-bold font-heading mb-1">{formatCurrency(asset.value)}</h3>
+                      {asset.purchase_price > 0 && (
+                        <div className="flex items-center gap-1.5 text-[11px] text-foreground/50">
+                          <span>Tổng vốn: {formatCurrency(asset.purchase_price)}</span>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Purchase Price & Profit */}
-                    {asset.purchase_price > 0 && (
+                    {asset.purchase_price > 0 ? (
                       <div className="flex flex-wrap items-center gap-2 text-xs font-medium mb-3">
-                        <span className="text-foreground/50">
-                          Giá mua: {formatCurrency(asset.purchase_price)}
-                        </span>
-                        <span className="text-foreground/30">•</span>
-                        <div className={cn("flex items-center gap-1", isProfitable ? "text-emerald-600" : "text-rose-600")}>
+                        <div className={cn("flex items-center gap-1 px-1.5 py-0.5 rounded", isProfitable ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600")}>
                           {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                           <span>{isProfitable ? '+' : ''}{profitPercent.toFixed(2)}%</span>
-                          <span className="ml-0.5">({isProfitable ? '+' : ''}{formatCurrency(profit)})</span>
                         </div>
+                        <span className={cn("text-xs", isProfitable ? "text-emerald-600" : "text-rose-600")}>
+                          {isProfitable ? '+' : ''}{formatCurrency(profit)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-2 text-[11px] mb-3 py-1.5 px-2 bg-amber-500/10 text-amber-600 rounded-lg border border-amber-500/20">
+                        <span>Giá vốn: Chưa cập nhật</span>
+                        <button onClick={() => openEditModal(asset)} className="font-semibold underline hover:text-amber-700">Thêm</button>
                       </div>
                     )}
 
@@ -550,13 +671,30 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                     </div>
 
                     {/* Mini Line Chart */}
-                    <div className="mt-auto h-10 w-full opacity-50 group-hover:opacity-100 transition-opacity">
-                      <AssetLineChart chartData={chartData} isProfitable={isProfitable} />
+                    <div className="mt-auto h-12 w-full">
+                      {isDynamic && !isMarketLoaded ? (
+                        <div className="w-full h-full bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 animate-pulse rounded opacity-60" />
+                      ) : chartData ? (
+                        <div className="opacity-60 group-hover:opacity-100 transition-opacity h-full">
+                          <AssetLineChart chartData={chartData} isProfitable={chartData.length > 1 ? chartData[chartData.length - 1].value >= chartData[0].value : isProfitable} />
+                        </div>
+                      ) : null}
                     </div>
 
                     <div className="mt-2 pt-2 border-t border-[var(--border)] flex justify-between items-center text-[10px] text-foreground/40">
-                      <span>Cập nhật: {new Date(asset.updated_at).toLocaleDateString('vi-VN')}</span>
-                      {isDynamic && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>}
+                      <span>Cập nhật: {formatDate(asset.updated_at)}</span>
+                      {isDynamic && (
+                        <div className="flex items-center gap-2">
+                          {change24h !== 0 && (
+                            <span className={cn("font-medium", change24h > 0 ? "text-emerald-500" : "text-rose-500")}>
+                              {change24h > 0 ? '+' : ''}{change24h.toFixed(2)}%
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
+                          </span>
+                        </div>
+                      )}
                       {asset.type === 'cash' && asset.description === 'sync:cashflow' && (
                         <span className="flex items-center gap-1 text-blue-500"><span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> Đồng bộ Dòng tiền</span>
                       )}
@@ -957,6 +1095,92 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                     </div>
                   </div>
                 )}
+              </form>
+            </motion.div>
+          </div>
+        )}
+        {editAsset && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setEditAsset(null)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative bg-card w-full max-w-md rounded-2xl shadow-xl overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-4 border-b border-[var(--border)]">
+                <h3 className="font-semibold">Chỉnh sửa tài sản</h3>
+                <button onClick={() => setEditAsset(null)} className="p-1 text-foreground/50 hover:text-foreground bg-slate-100 dark:bg-slate-800 rounded-full transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <form onSubmit={handleEditSubmit} className="p-5 space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-foreground/70 mb-1">Tên tài sản</label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.name}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  />
+                </div>
+                {(editAsset.type === 'crypto' || editAsset.type === 'stock') && (
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/70 mb-1">Mã (Symbol)</label>
+                    <input
+                      type="text"
+                      required
+                      value={editForm.symbol}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase"
+                    />
+                  </div>
+                )}
+                {editAsset.type !== 'crypto' && editAsset.type !== 'stock' && editAsset.type !== 'gold' ? (
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/70 mb-1">Giá trị hiện tại</label>
+                    <input
+                      type="text"
+                      required
+                      value={editForm.value ? Number(editForm.value).toLocaleString('vi-VN') : ''}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, value: parseMoneyInput(e.target.value) }))}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 font-heading"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/70 mb-1">Số lượng</label>
+                    <input
+                      type="text"
+                      required
+                      value={editForm.quantity}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, quantity: e.target.value.replace(/[^0-9.]/g, '') }))}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 font-heading"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-xs font-medium text-foreground/70 mb-1">Giá vốn (Purchase Price)</label>
+                  <input
+                    type="text"
+                    value={editForm.purchase_price ? Number(editForm.purchase_price).toLocaleString('vi-VN') : ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, purchase_price: parseMoneyInput(e.target.value) }))}
+                    placeholder="Không bắt buộc"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 font-heading"
+                  />
+                </div>
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isEditing}
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                  >
+                    {isEditing ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>
