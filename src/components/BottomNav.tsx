@@ -363,7 +363,7 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
                       )}
                     >
                       {avatarUrl && !avatarError ? (
-                        <Image src={avatarUrl} alt={displayName || 'User'} fill className="object-cover" onError={() => setAvatarError(true)} />
+                        <Image src={avatarUrl} alt={displayName || 'User'} fill className="object-cover" unoptimized onError={() => setAvatarError(true)} />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold text-xs">
                           {initials}

@@ -88,7 +88,7 @@ export default function DashboardClient({ displayName, avatarUrl, email, overvie
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-xl shrink-0">
             {avatarUrl ? (
-              <Image src={avatarUrl} alt={displayName} fill className="object-cover" />
+              <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold font-heading text-xl">
                 {displayName[0].toUpperCase()}

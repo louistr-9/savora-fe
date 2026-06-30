@@ -390,7 +390,7 @@ function SidebarContent({
             {/* Avatar */}
             <div className="h-10 w-10 rounded-full overflow-hidden shrink-0 relative">
               {avatarUrl && !avatarError ? (
-                <Image src={avatarUrl} alt={displayName} fill className="object-cover" onError={() => setAvatarError(true)} />
+                <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized onError={() => setAvatarError(true)} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-emerald-teal to-deep-violet flex items-center justify-center text-white font-bold font-heading text-sm">
                   {initials}

@@ -99,7 +99,7 @@ export function AdminSidebar({ displayName, avatarUrl, email, role }: AdminSideb
         </Link>
         <div className="flex items-center gap-3 px-2 py-3">
           {avatarUrl ? (
-            <Image src={avatarUrl} alt="Admin" width={36} height={36} className="rounded-full bg-slate-800" />
+            <Image src={avatarUrl} alt="Admin" width={36} height={36} className="rounded-full bg-slate-800 object-cover" unoptimized />
           ) : (
             <div className="w-9 h-9 rounded-full bg-emerald-teal flex items-center justify-center text-white font-bold text-sm">
               {initials}
