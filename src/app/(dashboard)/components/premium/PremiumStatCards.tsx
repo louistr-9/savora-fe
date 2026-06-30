@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { motion } from 'framer-motion';
 import { Wallet, TrendingUp, ShoppingCart, PiggyBank, ArrowUpRight, ArrowDownRight } from 'lucide-react';
@@ -87,7 +87,7 @@ export default function DashboardStatRow({ data }: { data: any }) {
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">{card.title}</p>
-            <p className={`text-xl sm:text-2xl font-black tracking-tight ${card.valueColor} mb-1`}>
+            <p className={`text-xl sm:text-2xl font-black tracking-tight truncate ${card.valueColor} mb-1`} title={fmt(card.value)}>
               {fmt(card.value)}
             </p>
             <p className="text-xs text-slate-400 mb-3">{card.sub}</p>
