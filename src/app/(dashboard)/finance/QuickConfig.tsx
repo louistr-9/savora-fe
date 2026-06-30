@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -37,8 +37,8 @@ export function QuickConfig({ initialBalance, monthlyBudget, variant = 'card' }:
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append('initial_balance', balanceStr.replace(/\D/g, ''));
-      formData.append('monthly_budget', budgetStr.replace(/\D/g, ''));
+      formData.append('initialBalance', balanceStr.replace(/\D/g, ''));
+      formData.append('monthlyBudget', budgetStr.replace(/\D/g, ''));
       await updateProfile(formData);
       setShowSuccess(true);
       router.refresh();
