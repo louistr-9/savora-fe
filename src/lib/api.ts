@@ -24,7 +24,8 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     endpoint.includes("/plans") ||
     endpoint.includes("/admin") ||
     endpoint.includes("/notifications") ||
-    endpoint.includes("/places")
+    endpoint.includes("/places") ||
+    endpoint.includes("/dashboard")
   ) {
     console.log(`[REAL API] Calling ${options.method || 'GET'} ${API_BASE_URL}${endpoint}`);
     
