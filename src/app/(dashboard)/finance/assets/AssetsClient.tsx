@@ -625,29 +625,31 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                     {/* Total Value */}
                     <div className="mb-3">
                       <h3 className="text-xl font-bold font-heading mb-1">{formatCurrency(asset.value)}</h3>
-                      {asset.purchase_price > 0 && (
+                      {asset.purchase_price > 0 && isDynamic && (
                         <div className="flex items-center gap-1.5 text-[11px] text-foreground/50">
                           <span>Tổng vốn: {formatCurrency(asset.purchase_price)}</span>
                         </div>
                       )}
                     </div>
 
-                    {/* Purchase Price & Profit */}
-                    {asset.purchase_price > 0 ? (
-                      <div className="flex flex-wrap items-center gap-2 text-xs font-medium mb-3">
-                        <div className={cn("flex items-center gap-1 px-1.5 py-0.5 rounded", isProfitable ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600")}>
-                          {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                          <span>{isProfitable ? '+' : ''}{profitPercent.toFixed(2)}%</span>
+                    {/* Purchase Price & Profit — only meaningful for investment types */}
+                    {isDynamic && (
+                      asset.purchase_price > 0 ? (
+                        <div className="flex flex-wrap items-center gap-2 text-xs font-medium mb-3">
+                          <div className={cn("flex items-center gap-1 px-1.5 py-0.5 rounded", isProfitable ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600")}>
+                            {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                            <span>{isProfitable ? '+' : ''}{profitPercent.toFixed(2)}%</span>
+                          </div>
+                          <span className={cn("text-xs", isProfitable ? "text-emerald-600" : "text-rose-600")}>
+                            {isProfitable ? '+' : ''}{formatCurrency(profit)}
+                          </span>
                         </div>
-                        <span className={cn("text-xs", isProfitable ? "text-emerald-600" : "text-rose-600")}>
-                          {isProfitable ? '+' : ''}{formatCurrency(profit)}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-2 text-[11px] mb-3 py-1.5 px-2 bg-amber-500/10 text-amber-600 rounded-lg border border-amber-500/20">
-                        <span>Giá vốn: Chưa cập nhật</span>
-                        <button onClick={() => openEditModal(asset)} className="font-semibold underline hover:text-amber-700">Thêm</button>
-                      </div>
+                      ) : (
+                        <div className="flex items-center justify-between gap-2 text-[11px] mb-3 py-1.5 px-2 bg-amber-500/10 text-amber-600 rounded-lg border border-amber-500/20">
+                          <span>Giá vốn: Chưa cập nhật</span>
+                          <button onClick={() => openEditModal(asset)} className="font-semibold underline hover:text-amber-700">Thêm</button>
+                        </div>
+                      )
                     )}
 
                     {/* Detail Stats Grid */}
