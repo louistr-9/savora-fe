@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Save, User, Image as ImageIcon, Wallet, ShieldCheck, Loader2, Eye, EyeOff, Target, Info, ExternalLink } from 'lucide-react';
@@ -31,6 +31,7 @@ export function SettingsClient({ initialData }: SettingsClientProps) {
   const [isVisible, setIsVisible] = useLocalStorage('isBalanceVisible', false);
   const [activeModal, setActiveModal] = useState<'telegram' | 'discord' | 'gemini' | null>(null);
 
+  const [avatarError, setAvatarError] = useState(false);
   const [formData, setFormData] = useState({
     fullName: initialData.fullName,
     avatarUrl: initialData.avatarUrl,
@@ -41,6 +42,10 @@ export function SettingsClient({ initialData }: SettingsClientProps) {
     monthlyBudget: initialData.monthlyBudget?.toString() || '0',
     initialBalance: initialData.initialBalance?.toString() || '0',
   });
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [formData.avatarUrl]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -178,13 +183,23 @@ export function SettingsClient({ initialData }: SettingsClientProps) {
                 </div>
                 {/* Avatar Preview */}
                 <div className="w-12 h-12 rounded-full border-2 border-emerald-teal/30 overflow-hidden shrink-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 shadow-sm relative group-hover:border-emerald-teal transition-colors duration-300">
-                  {formData.avatarUrl ? (
-                    <Image src={formData.avatarUrl} alt="Preview" fill className="object-cover" unoptimized />
+                  {formData.avatarUrl && !avatarError ? (
+                    <Image 
+                      src={formData.avatarUrl} 
+                      alt="Preview" 
+                      fill 
+                      className="object-cover" 
+                      unoptimized 
+                      onError={() => setAvatarError(true)}
+                    />
                   ) : (
                     <User className="w-5 h-5 text-slate-400" />
                   )}
                 </div>
               </div>
+              {avatarError && formData.avatarUrl && (
+                <p className="text-xs text-rose-500 ml-2">URL không hợp lệ. Vui lòng sử dụng link ảnh trực tiếp (tận cùng bằng .jpg, .png).</p>
+              )}
             </div>
           </div>
         </motion.div>
