@@ -1315,8 +1315,6 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
         </div>
       </div>
 
-      {/* ── FILTER TABS ── */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
 
       {/* ── PLAN GRID ── */}
       {filteredPlans.length === 0 ? (
