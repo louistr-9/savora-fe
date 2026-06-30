@@ -357,12 +357,12 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
 
       {/* Header */}
       <div className="flex items-start gap-3 mb-4">
-        <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center shrink-0', typeInfo.bg)}>
-          <TypeIcon className={cn('w-5 h-5', typeInfo.color)} />
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-blue-50 dark:bg-blue-900/20">
+          <TypeIcon className="w-5 h-5 text-blue-500" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-foreground text-[15px] leading-tight truncate pr-6">{plan.title}</h3>
-          <p className={cn('text-xs font-medium mt-0.5', typeInfo.color)}>{typeInfo.label}</p>
+          <p className="text-xs font-medium mt-0.5 text-blue-500">Du lịch</p>
         </div>
       </div>
 
@@ -380,7 +380,7 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
-              className={cn('h-full rounded-full', typeInfo.solid)}
+              className="h-full rounded-full bg-blue-500"
             />
           </div>
           <p className="text-right text-[11px] text-foreground/40 mt-1">{progress.toFixed(0)}%</p>
@@ -1368,8 +1368,8 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
               {/* Modal header */}
               <div className="p-5 border-b border-[var(--border)] flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-8 h-8 rounded-xl flex items-center justify-center', typeInfo.bg)}>
-                    <typeInfo.icon className={cn('w-4 h-4', typeInfo.color)} />
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-blue-50 dark:bg-blue-900/20">
+                    <Plane className="w-4 h-4 text-blue-500" />
                   </div>
                   <h3 className="font-heading font-bold text-base">
                     {editingPlan ? 'Sửa kế hoạch' : step === 1 ? 'Tạo kế hoạch' : step === 2 ? 'Gợi ý AI' : 'Gợi ý cho bạn'}
