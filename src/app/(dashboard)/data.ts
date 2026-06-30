@@ -1,8 +1,6 @@
 import { getCachedUser } from '@/lib/auth';
 import { fetchAPI } from '@/lib/api';
 
-import { getCachedUser } from '@/lib/auth';
-import { fetchAPI } from '@/lib/api';
 
 export async function getPremiumDashboardData() {
   const authUser = await getCachedUser();
