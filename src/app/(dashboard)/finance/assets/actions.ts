@@ -7,7 +7,7 @@ export interface AssetType {
   id: string;
   user_id: string;
   name: string;
-  type: 'real_estate' | 'cash' | 'gold' | 'stock' | 'crypto' | 'saving' | 'other';
+  type: 'real_estate' | 'cash' | 'gold' | 'stock' | 'crypto' | 'saving';
   symbol: string | null;
   value: number;
   purchase_price: number;
