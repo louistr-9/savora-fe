@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { motion } from 'framer-motion';
 import { Target, Plane, ShieldCheck, Car, ArrowRight, Inbox } from 'lucide-react';
@@ -8,7 +8,7 @@ interface Goal {
   id: string;
   name: string;
   current: number;
-  target: number;
+  target: number | null;
   icon?: string;
   color?: string;
 }
@@ -47,8 +47,8 @@ export default function PremiumGoals({ data }: { data: Goal[] }) {
           <p className="text-sm text-slate-500">Chưa có mục tiêu nào</p>
         </div>
       ) : topGoal ? (() => {
-        const progress = topGoal.target > 0 ? Math.min(100, Math.round((topGoal.current / topGoal.target) * 100)) : 0;
-        const remaining = topGoal.target - topGoal.current;
+        const progress = topGoal.target ? Math.min(100, Math.round((topGoal.current / topGoal.target) * 100)) : 0;
+        const remaining = topGoal.target ? topGoal.target - topGoal.current : 0;
         const monthsLeft = remaining > 0 ? Math.ceil(remaining / (topGoal.current > 0 ? topGoal.current / 3 : 1000000)) : 0;
 
         return (
@@ -60,43 +60,55 @@ export default function PremiumGoals({ data }: { data: Goal[] }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-slate-800 dark:text-white text-sm truncate">{topGoal.name}</p>
-                <p className="text-xs text-slate-500 mt-0.5">Mục tiêu: {fmt(topGoal.target)}</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {topGoal.target ? `Mục tiêu: ${fmt(topGoal.target)}` : 'Đang nuôi vô thời hạn'}
+                </p>
               </div>
             </div>
 
             {/* Big value */}
             <p className="text-2xl font-black text-slate-900 dark:text-white mb-1">{fmt(topGoal.current)}</p>
             
-            {/* Progress bar */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-emerald-500 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 1, delay: 0.5, ease: 'circOut' }}
-                />
-              </div>
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">{progress}%</span>
-            </div>
+            {topGoal.target ? (
+              <>
+                {/* Progress bar */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-emerald-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 1, delay: 0.5, ease: 'circOut' }}
+                    />
+                  </div>
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">{progress}%</span>
+                </div>
 
-            {/* Stats row */}
-            <div className="grid grid-cols-2 gap-3 mt-auto">
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-3">
-                <p className="text-xs text-slate-500 mb-1">Còn lại</p>
-                <p className="text-sm font-bold text-slate-800 dark:text-white">{fmt(remaining > 0 ? remaining : 0)}</p>
+                {/* Stats row */}
+                <div className="grid grid-cols-2 gap-3 mt-auto">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-3">
+                    <p className="text-xs text-slate-500 mb-1">Còn lại</p>
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">{fmt(remaining > 0 ? remaining : 0)}</p>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-3">
+                    <p className="text-xs text-slate-500 mb-1">Dự kiến hoàn thành</p>
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
+                      {monthsLeft > 0 ? `Sau ${monthsLeft} tháng nữa` : 'Đã hoàn thành 🎉'}
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col justify-end mt-4">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 flex items-center justify-center gap-2">
+                  <span className="text-xl">🐷</span>
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Không giới hạn mục tiêu</span>
+                </div>
               </div>
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-3">
-                <p className="text-xs text-slate-500 mb-1">Dự kiến hoàn thành</p>
-                <p className="text-sm font-bold text-slate-800 dark:text-white">
-                  {monthsLeft > 0 ? `Sau ${monthsLeft} tháng nữa` : 'Đã hoàn thành 🎉'}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         );
       })() : null}
     </motion.div>
   );
 }
-

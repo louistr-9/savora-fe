@@ -77,6 +77,28 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
   const [showAddModal, setShowAddModal] = useState(false);
 
   const [marketData, setMarketData] = useState<Record<string, { price: number, change24h: number, sparkline7d: number[] }>>({});
+  const [savingHistory, setSavingHistory] = useState<Record<string, { totalCount: number, history: any[], totalAmount: number }>>({});
+
+  useEffect(() => {
+    const fetchSavingData = async () => {
+      const savingAssets = initialAssets.filter(a => a.type === 'saving');
+      for (const asset of savingAssets) {
+        try {
+          const res = await fetch(`/api/assets/saving-history?name=${encodeURIComponent(asset.name)}`);
+          const data = await res.json();
+          if (data && data.history) {
+            setSavingHistory(prev => ({
+              ...prev,
+              [asset.id]: data
+            }));
+          }
+        } catch (e) {
+          console.error('Failed to fetch saving history for', asset.name);
+        }
+      }
+    };
+    fetchSavingData();
+  }, [initialAssets]);
 
   useEffect(() => {
     const fetchMarketData = async () => {
@@ -671,16 +693,55 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                       )}
                     </div>
 
-                    {/* Mini Line Chart */}
-                    <div className="mt-auto h-12 w-full">
-                      {isDynamic && !isMarketLoaded ? (
-                        <div className="w-full h-full bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 animate-pulse rounded opacity-60" />
-                      ) : chartData ? (
-                        <div className="opacity-60 group-hover:opacity-100 transition-opacity h-full">
-                          <AssetLineChart chartData={chartData} isProfitable={chartData.length > 1 ? chartData[chartData.length - 1].value >= chartData[0].value : isProfitable} />
+                    {/* Mini Line Chart or Saving History */}
+                    {asset.type === 'saving' ? (() => {
+                      const sData = savingHistory[asset.id];
+                      if (!sData) {
+                        return <div className="mt-auto h-16 w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl opacity-60" />;
+                      }
+                      return (
+                        <div className="mt-auto bg-slate-50 dark:bg-slate-800/30 rounded-xl p-3">
+                          {asset.target_amount ? (
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-[11px] font-medium">
+                                <span>{formatCurrency(sData.totalAmount)} / {formatCurrency(asset.target_amount)}</span>
+                                <span className="text-emerald-600">{Math.min(100, Math.round((sData.totalAmount / asset.target_amount) * 100))}%</span>
+                              </div>
+                              <div className="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, (sData.totalAmount / asset.target_amount) * 100)}%` }} />
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex justify-between text-xs font-semibold mb-2 text-slate-700 dark:text-slate-300">
+                                <span>🔥 Đã bỏ {sData.totalCount} lần</span>
+                                <span>Tổng: {formatCurrency(sData.totalAmount)}</span>
+                              </div>
+                              <div className="space-y-1.5 border-t border-slate-200 dark:border-slate-700 pt-2">
+                                {sData.history.length === 0 ? (
+                                  <p className="text-[10px] text-center text-slate-400">Chưa có giao dịch nào</p>
+                                ) : sData.history.map((tx: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between text-[10px]">
+                                    <span className="text-emerald-600 font-medium">+{formatCurrency(tx.amount)}</span>
+                                    <span className="text-slate-500">{formatDate(tx.date)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      ) : null}
-                    </div>
+                      );
+                    })() : (
+                      <div className="mt-auto h-12 w-full">
+                        {isDynamic && !isMarketLoaded ? (
+                          <div className="w-full h-full bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 animate-pulse rounded opacity-60" />
+                        ) : chartData ? (
+                          <div className="opacity-60 group-hover:opacity-100 transition-opacity h-full">
+                            <AssetLineChart chartData={chartData} isProfitable={chartData.length > 1 ? chartData[chartData.length - 1].value >= chartData[0].value : isProfitable} />
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
 
                     <div className="mt-2 pt-2 border-t border-[var(--border)] flex justify-between items-center text-[10px] text-foreground/40">
                       <span>Cập nhật: {formatDate(asset.updated_at)}</span>

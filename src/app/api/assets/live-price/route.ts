@@ -92,19 +92,28 @@ export async function GET(request: Request) {
     }
     else if (type === 'gold') {
       try {
-        const res = await fetch('https://api1.binance.com/api/v3/ticker/price?symbol=PAXGUSDT', {
+        const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=pax-gold&sparkline=true', {
           next: { revalidate: 300 }
         });
         const data = await res.json();
         
-        if (data && data.price) {
-          const pricePerOz = parseFloat(data.price);
-          price = pricePerOz * (37.5 / 31.1035) * 25400;
+        if (data && data.length > 0) {
+          const pricePerOzUSD = parseFloat(data[0].current_price);
+          const conversionRate = (37.5 / 31.1035) * 25400; // Oz to Lượng, USD to VND
+          
+          price = pricePerOzUSD * conversionRate;
+          change24h = parseFloat(data[0].price_change_percentage_24h || 0);
+          
+          if (data[0].sparkline_in_7d?.price) {
+            sparkline7d = data[0].sparkline_in_7d.price.map((p: number) => p * conversionRate);
+          }
         } else {
           throw new Error('Gold API error');
         }
       } catch (err) {
         price = 140000000;
+        change24h = 0;
+        sparkline7d = [];
       }
     }
 
