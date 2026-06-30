@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X, User, Bell, Palette, LogOut } from 'lucide-react';
+import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X, User, Bell, Palette, LogOut, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -323,6 +323,25 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
                             <span className="text-[10px] font-bold bg-emerald-teal/10 text-emerald-teal px-2 py-1 rounded-full">
                               Free
                             </span>
+                          </div>
+
+                          <div 
+                            className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer"
+                            onClick={() => {
+                              window.dispatchEvent(new Event('show-install-prompt'));
+                              setRadialOpen(false);
+                              setMenuOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                <Download className="w-4 h-4 text-blue-500" strokeWidth={1.5} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Cài đặt ứng dụng</p>
+                                <p className="text-[11px] text-foreground/50">Thêm Savora vào màn hình chính</p>
+                              </div>
+                            </div>
                           </div>
                         </div>
 

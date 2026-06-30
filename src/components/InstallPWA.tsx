@@ -27,38 +27,27 @@ export default function InstallPWA() {
     // If it's iOS, we don't get a prompt event, so we show the modal proactively or via a button
     // (Here we show it proactively once per session, or you can bind it to a button)
     if (isIosDevice) {
-      try {
-        const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
-        if (!hasSeenPrompt) {
-          setTimeout(() => setShowModal(true), 3000); // Show after 3s
-          sessionStorage.setItem('hasSeenInstallPrompt', 'true');
-        }
-      } catch (e) {
-        // Fallback for private mode
-        setTimeout(() => setShowModal(true), 3000);
-      }
+      // Do nothing proactively. Wait for the user to click the install button.
     }
 
     // Android/Chrome install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show modal proactively for Android as well
-      try {
-        const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
-        if (!hasSeenPrompt) {
-          setTimeout(() => setShowModal(true), 3000);
-          sessionStorage.setItem('hasSeenInstallPrompt', 'true');
-        }
-      } catch (e) {
-        setTimeout(() => setShowModal(true), 3000);
+    };
+
+    const handleShowPrompt = () => {
+      if (!isAppInstalled) {
+        setShowModal(true);
       }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('show-install-prompt', handleShowPrompt);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('show-install-prompt', handleShowPrompt);
     };
   }, []);
 
