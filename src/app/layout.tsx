@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/logo-savora.png',
     apple: '/logo-savora.png',
-  }
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+  },
 };
 
 export const viewport: Viewport = {
@@ -37,8 +41,6 @@ export default async function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <script
           id="theme-script"
           suppressHydrationWarning

@@ -27,10 +27,15 @@ export default function InstallPWA() {
     // If it's iOS, we don't get a prompt event, so we show the modal proactively or via a button
     // (Here we show it proactively once per session, or you can bind it to a button)
     if (isIosDevice) {
-      const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
-      if (!hasSeenPrompt) {
-        setTimeout(() => setShowModal(true), 3000); // Show after 3s
-        sessionStorage.setItem('hasSeenInstallPrompt', 'true');
+      try {
+        const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
+        if (!hasSeenPrompt) {
+          setTimeout(() => setShowModal(true), 3000); // Show after 3s
+          sessionStorage.setItem('hasSeenInstallPrompt', 'true');
+        }
+      } catch (e) {
+        // Fallback for private mode
+        setTimeout(() => setShowModal(true), 3000);
       }
     }
 
@@ -39,10 +44,14 @@ export default function InstallPWA() {
       e.preventDefault();
       setDeferredPrompt(e);
       // Show modal proactively for Android as well
-      const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
-      if (!hasSeenPrompt) {
+      try {
+        const hasSeenPrompt = sessionStorage.getItem('hasSeenInstallPrompt');
+        if (!hasSeenPrompt) {
+          setTimeout(() => setShowModal(true), 3000);
+          sessionStorage.setItem('hasSeenInstallPrompt', 'true');
+        }
+      } catch (e) {
         setTimeout(() => setShowModal(true), 3000);
-        sessionStorage.setItem('hasSeenInstallPrompt', 'true');
       }
     };
 
@@ -67,8 +76,8 @@ export default function InstallPWA() {
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-[#2D2A26] dark:bg-slate-900 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
+      <div className="bg-[#2D2A26] dark:bg-slate-900 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative">
         
         {/* Header */}
         <div className="p-6 pb-4">
