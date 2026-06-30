@@ -2228,6 +2228,17 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
                     />
                   </div>
 
+                  {/* Alternatives */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-foreground/50 mb-2 uppercase tracking-wider">Địa điểm thay thế (Nếu có)</label>
+                    <textarea
+                      value={newLocationForm.alternatives || ''}
+                      onChange={e => setNewLocationForm(f => ({...f, alternatives: e.target.value}))}
+                      placeholder="VD: Nếu mưa thì đi uống cafe ở..."
+                      className="w-full px-4 py-3 rounded-2xl border border-[var(--border)] bg-transparent focus:outline-none focus:border-blue-500 text-sm font-medium resize-none h-[72px]"
+                    />
+                  </div>
+
                   {/* Divider */}
                   <div className="h-px bg-[var(--border)] w-full"></div>
 
