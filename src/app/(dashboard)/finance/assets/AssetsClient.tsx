@@ -690,7 +690,41 @@ export default function AssetsClient({ initialAssets, cashBalance }: { initialAs
                               {isDynamicAsset ? (
                                 <div>
                                   <label className="block text-xs font-medium text-foreground/70 mb-1">Mã (Symbol) {addForm.type !== 'gold' && <span className="text-red-500">*</span>}</label>
-                                  <input value={addForm.type === 'gold' ? 'SJC' : addForm.symbol} readOnly={addForm.type === 'gold'} required={addForm.type !== 'gold'} onChange={e => setAddForm({...addForm, symbol: e.target.value.toUpperCase()})} className="w-full px-3 py-2.5 bg-background border border-[var(--border)] rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" placeholder={addForm.type === 'gold' ? 'SJC (tự động)' : 'VD: HPG, BTC...'} />
+                                  <input 
+                                    value={addForm.type === 'gold' ? 'SJC' : addForm.symbol} 
+                                    readOnly={addForm.type === 'gold'} 
+                                    required={addForm.type !== 'gold'} 
+                                    onChange={e => setAddForm({...addForm, symbol: e.target.value.toUpperCase()})} 
+                                    className="w-full px-3 py-2.5 bg-background border border-[var(--border)] rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" 
+                                    placeholder={addForm.type === 'gold' ? 'SJC (tự động)' : 'VD: HPG, BTC...'} 
+                                    list={addForm.type === 'stock' ? 'stock-symbols' : addForm.type === 'crypto' ? 'crypto-symbols' : undefined}
+                                  />
+                                  {addForm.type === 'stock' && (
+                                    <datalist id="stock-symbols">
+                                      <option value="VCB">Vietcombank</option>
+                                      <option value="FPT">FPT</option>
+                                      <option value="HPG">Hòa Phát</option>
+                                      <option value="VHM">Vinhomes</option>
+                                      <option value="VIC">Vingroup</option>
+                                      <option value="TCB">Techcombank</option>
+                                      <option value="MBB">MBBank</option>
+                                      <option value="VPB">VPBank</option>
+                                      <option value="MWG">Thế giới di động</option>
+                                      <option value="PNJ">PNJ</option>
+                                    </datalist>
+                                  )}
+                                  {addForm.type === 'crypto' && (
+                                    <datalist id="crypto-symbols">
+                                      <option value="BTC">Bitcoin</option>
+                                      <option value="ETH">Ethereum</option>
+                                      <option value="BNB">Binance</option>
+                                      <option value="SOL">Solana</option>
+                                      <option value="USDT">Tether</option>
+                                      <option value="XRP">XRP</option>
+                                      <option value="ADA">Cardano</option>
+                                      <option value="DOGE">Dogecoin</option>
+                                    </datalist>
+                                  )}
                                 </div>
                               ) : (
                                 <div>
