@@ -14,16 +14,30 @@ export async function GET(request: Request) {
 
     if (type === 'crypto') {
       const safeSymbol = symbol || '';
-      // Fetch from Binance using api1 to bypass ISP blocks in VN
-      const fetchSymbol = safeSymbol.endsWith('USDT') ? safeSymbol : `${safeSymbol}USDT`;
       try {
-        const res = await fetch(`https://api1.binance.com/api/v3/ticker/price?symbol=${fetchSymbol}`, {
+        // First get the CoinGecko ID from symbol
+        const searchRes = await fetch(`https://api.coingecko.com/api/v3/search?query=${safeSymbol}`, {
+          next: { revalidate: 3600 } // Cache search results
+        });
+        const searchData = await searchRes.json();
+        
+        let coinId = '';
+        if (searchData && searchData.coins && searchData.coins.length > 0) {
+          // Try to find exact match first, otherwise take the first one
+          const exactMatch = searchData.coins.find((c: any) => c.symbol.toLowerCase() === safeSymbol.toLowerCase());
+          coinId = exactMatch ? exactMatch.id : searchData.coins[0].id;
+        } else {
+          throw new Error('Coin not found on CoinGecko');
+        }
+
+        // Then get price
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=vnd`, {
           next: { revalidate: 60 } // Cache for 60 seconds
         });
         const data = await res.json();
         
-        if (data && data.price) {
-          price = parseFloat(data.price) * 25400; // USDT to VND
+        if (data && data[coinId] && data[coinId].vnd) {
+          price = parseFloat(data[coinId].vnd);
         } else {
           throw new Error('Invalid symbol or API error');
         }
@@ -37,8 +51,10 @@ export async function GET(request: Request) {
     else if (type === 'stock') {
       const safeSymbol = symbol || '';
       try {
-        // Fetch from VNDirect API
-        const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:${safeSymbol}&size=1`, {
+        // Fetch from DNSE API (Entrade)
+        const to = Math.floor(Date.now() / 1000);
+        const from = to - (86400 * 7); // 7 days ago
+        const res = await fetch(`https://services.entrade.com.vn/chart-api/v2/ohlcs/stock?resolution=1D&symbol=${safeSymbol}&from=${from}&to=${to}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0'
           },
@@ -46,11 +62,12 @@ export async function GET(request: Request) {
         });
         const data = await res.json();
         
-        if (data && data.data && data.data.length > 0) {
-          const rawPrice = data.data[0].adClose || data.data[0].close || 0;
-          price = parseFloat(rawPrice) * 1000;
+        if (data && data.c && data.c.length > 0) {
+          // DNSE returns price in thousands (e.g. 28.5 = 28,500)
+          const latestClose = data.c[data.c.length - 1];
+          price = parseFloat(latestClose) * 1000;
         } else {
-          throw new Error('No data from VNDirect');
+          throw new Error('No data from DNSE');
         }
       } catch (err) {
         // Mock fallback for presentation if API fails (e.g. timeout or blocked)
