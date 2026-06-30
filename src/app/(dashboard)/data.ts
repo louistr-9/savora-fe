@@ -1,4 +1,4 @@
-﻿import { getCachedUser } from '@/lib/auth';
+import { getCachedUser } from '@/lib/auth';
 import { fetchAPI } from '@/lib/api';
 
 const ASSET_LABELS: Record<string, string> = {
@@ -102,7 +102,7 @@ export async function getPremiumDashboardData() {
     }
   }
 
-  const initialBalance = Number(user.initialBalance) || 0;
+  const initialBalance = Number(user.initial_balance) || 0;
   const currentBalance = initialBalance + allTimeIncome - allTimeExpense - allTimeSaving;
 
   const calcPercent = (curr: number, prev: number) => {
