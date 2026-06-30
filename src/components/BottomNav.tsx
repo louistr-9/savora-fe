@@ -130,7 +130,7 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
               setRadialOpen(false);
               setMenuOpen(false);
             }}
-            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-slate-900/20 z-40"
           />
         )}
       </AnimatePresence>

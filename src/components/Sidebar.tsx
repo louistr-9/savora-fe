@@ -472,7 +472,7 @@ export function Sidebar({ displayName, avatarUrl, email, role }: SidebarProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-[70] bg-black/40 lg:hidden"
             />
 
             {/* Drawer */}
