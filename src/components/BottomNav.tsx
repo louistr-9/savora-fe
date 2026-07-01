@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X, User, Bell, Palette, LogOut, Download } from 'lucide-react';
+import { LayoutDashboard, Wallet, Map, BarChart3, Landmark, CreditCard, LineChart, Settings, X, User, Bell, Palette, LogOut, Download, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -53,7 +53,7 @@ const navItems = [
   { label: 'Tài khoản', icon: User, href: '/profile', isProfile: true },
 ];
 
-export function BottomNav({ displayName, avatarUrl, email }: { displayName?: string, avatarUrl?: string | null, email?: string }) {
+export function BottomNav({ displayName, avatarUrl, email, role }: { displayName?: string, avatarUrl?: string | null, email?: string, role?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [radialOpen, setRadialOpen] = useState(false);
@@ -343,6 +343,27 @@ export function BottomNav({ displayName, avatarUrl, email }: { displayName?: str
                               </div>
                             </div>
                           </div>
+
+                          {(role === 'ADMIN' || email === process.env.NEXT_PUBLIC_ADMIN_EMAIL || email === 'louistran090902@gmail.com') && (
+                            <Link 
+                              href="/admin"
+                              className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors"
+                              onClick={() => {
+                                setRadialOpen(false);
+                                setMenuOpen(false);
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
+                                  <Shield className="w-4 h-4 text-white" strokeWidth={1.5} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">Quản trị Admin</p>
+                                  <p className="text-[11px] text-foreground/50">Truy cập Admin Panel</p>
+                                </div>
+                              </div>
+                            </Link>
+                          )}
                         </div>
 
                         {/* Footer (Logout) */}

@@ -40,7 +40,7 @@ export default async function DashboardLayout({
           {children}
         </div>
       </main>
-      <BottomNav displayName={displayName} avatarUrl={avatarUrl} email={email} />
+      <BottomNav displayName={displayName} avatarUrl={avatarUrl} email={email} role={role} />
       <AIChatbot />
     </>
   );
