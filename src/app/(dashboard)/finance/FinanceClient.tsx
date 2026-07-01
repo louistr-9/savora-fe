@@ -179,13 +179,15 @@ export function FinanceClient({ initialBalanceInfo, initialTransactions, initial
     }
     setIsLoading(false);
   };
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (year !== initialYear || month !== initialMonth) {
-      fetchDashboardData();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
+    fetchDashboardData();
   }, [year, month]);
-
   const isSubmittingRef = useRef(false);
   const [pendingTransactions, setPendingTransactions] = useState<any[]>([]);
 
