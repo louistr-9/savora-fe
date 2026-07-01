@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { fetchAPI } from '@/lib/api';
@@ -19,10 +19,11 @@ export async function getMonthlyTransactions(year: number, month: number) {
     const res = await fetchAPI('/transactions?limit=1000');
     const transactions = res.data || [];
 
-    // Lọc thủ công ở frontend cho nhanh trong phạm vi tháng
+    // Lọc bằng múi giờ VN để tránh lệch múi giờ trên server Vercel (UTC)
     return transactions.filter((t: any) => {
-      const d = new Date(t.date);
-      return d.getFullYear() === year && (d.getMonth() + 1) === month;
+      const vnDateStr = getVNTime(new Date(t.date));
+      const [y, m] = vnDateStr.split('-').map(Number);
+      return y === year && m === month;
     }).map((t: any) => ({
       id: t.id,
       title: t.description || t.title,
