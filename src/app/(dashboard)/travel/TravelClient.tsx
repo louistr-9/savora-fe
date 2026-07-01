@@ -1305,31 +1305,7 @@ export default function TravelClient({ initialPlans, financialContext }: Props) 
         </button>
       </div>
 
-      {/* ── BUDGET SUMMARY BAR ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-card border border-[var(--border)] rounded-2xl p-4">
-          <p className="text-xs text-foreground/50 mb-1">Số dư khả dụng</p>
-          <p className="text-xl font-bold font-heading text-emerald-500">{formatNumber(financialContext.netBalance)}</p>
-          <p className="text-[11px] text-foreground/40 mt-0.5">Có thể dùng cho plan</p>
-        </div>
-        <div className="bg-card border border-[var(--border)] rounded-2xl p-4">
-          <p className="text-xs text-foreground/50 mb-1">Gợi ý dành cho plan</p>
-          <p className="text-xl font-bold font-heading text-blue-500">{formatNumber(financialContext.availableBudget)}</p>
-          <p className="text-[11px] text-foreground/40 mt-0.5">≈ 30% số dư hiện tại</p>
-        </div>
-        <div className="bg-card border border-[var(--border)] rounded-2xl p-4">
-          <p className="text-xs text-foreground/50 mb-1">Tổng ngân sách plans</p>
-          <p className="text-xl font-bold font-heading text-foreground">{formatNumber(totalBudget)}</p>
-          <p className="text-[11px] text-foreground/40 mt-0.5">{activePlans.length} kế hoạch đang active</p>
-        </div>
-        <div className="bg-card border border-[var(--border)] rounded-2xl p-4">
-          <p className="text-xs text-foreground/50 mb-1">Đã tiết kiệm được</p>
-          <p className="text-xl font-bold font-heading text-violet-500">{formatNumber(totalSaved)}</p>
-          <p className="text-[11px] text-foreground/40 mt-0.5">
-            {totalBudget > 0 ? `${((totalSaved / totalBudget) * 100).toFixed(0)}% mục tiêu` : '—'}
-          </p>
-        </div>
-      </div>
+
 
 
       {/* ── PLAN GRID ── */}
