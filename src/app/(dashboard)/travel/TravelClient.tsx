@@ -7,7 +7,7 @@ import {
   Map, Plus, Plane, UtensilsCrossed, ShoppingBag, Sparkles,
   Loader2, Trash2, Check, ChevronRight, X, Pencil,
   Wallet, TrendingUp, CalendarDays, Target, Zap, RefreshCw,
-  AlertCircle, ArrowRight, Flame, Clock, MapPin, ChevronLeft, Printer, List, Search
+  AlertCircle, ArrowRight, Flame, Clock, MapPin, ChevronLeft, Printer, List, Search, Shuffle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchPlaces } from '@/lib/api';
