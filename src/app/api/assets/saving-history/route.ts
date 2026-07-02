@@ -21,9 +21,10 @@ export async function GET(request: Request) {
 
     const relatedTxs = transactions.filter((tx: any) => {
       const desc = (tx.description || '').toLowerCase();
+      const cat = (tx.category || '').toLowerCase();
       const matchName = name.toLowerCase();
-      // Usually saving recurrings have desc like 'Gửi tự động: Nuôi heo'
-      return desc.includes(matchName) && tx.type === 'expense';
+      // Usually saving recurrings have desc like 'Gửi tự động: Nuôi heo' or category 'Nuôi heo'
+      return (desc.includes(matchName) || cat.includes(matchName)) && (tx.type === 'expense' || tx.type === 'saving');
     });
 
     const totalCount = relatedTxs.length;
