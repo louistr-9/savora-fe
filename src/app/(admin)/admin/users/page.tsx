@@ -47,6 +47,7 @@ export default function AdminUsers() {
                 <th className="px-4 py-3 font-semibold whitespace-nowrap">Tên & Email</th>
                 <th className="px-4 py-3 font-semibold whitespace-nowrap">Role</th>
                 <th className="px-4 py-3 font-semibold whitespace-nowrap text-center">Đăng nhập bằng</th>
+                <th className="px-4 py-3 font-semibold whitespace-nowrap text-center">Linked Bots</th>
                 <th className="px-4 py-3 font-semibold whitespace-nowrap text-right">Lượt truy cập</th>
                 <th className="px-4 py-3 font-semibold whitespace-nowrap text-right">Tổng thời gian</th>
                 <th className="px-4 py-3 font-semibold whitespace-nowrap">Thiết bị (User-Agent)</th>
@@ -70,6 +71,23 @@ export default function AdminUsers() {
                     ) : (
                       <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-xs font-medium border border-slate-200 dark:border-slate-700">Email</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {user.discord_user_id ? (
+                        <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 text-[10px] font-bold border border-indigo-100 dark:border-indigo-500/20" title="Discord Linked">
+                          Discord
+                        </span>
+                      ) : null}
+                      {user.telegram_chat_id ? (
+                        <span className="px-2 py-0.5 rounded bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400 text-[10px] font-bold border border-sky-100 dark:border-sky-500/20" title="Telegram Linked">
+                          Telegram
+                        </span>
+                      ) : null}
+                      {!user.discord_user_id && !user.telegram_chat_id && (
+                        <span className="text-slate-400 dark:text-slate-500 text-xs">-</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-right font-medium text-emerald-600 dark:text-emerald-400">
                     {user.visit_count || 0}
