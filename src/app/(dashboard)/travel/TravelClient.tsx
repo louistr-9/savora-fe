@@ -315,15 +315,24 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
   const TypeIcon = Plane;
   
   let displayBudget = Number(plan.budget) || 0;
-  if (displayBudget === 0 && plan.metadata?.itinerary) {
+  let spentAmount = Number(plan.current_saved) || 0;
+  
+  if (plan.metadata?.itinerary) {
+     let calcBudget = 0;
+     let calcSpent = 0;
      Object.values(plan.metadata.itinerary).forEach((dayArr: any) => {
         dayArr.forEach((loc: any) => {
-           displayBudget += Number(loc.cost) || 0;
+           calcBudget += Number(loc.cost) || 0;
+           if (loc.isDone) {
+             calcSpent += Number(loc.actualCost !== undefined ? loc.actualCost : loc.cost) || 0;
+           }
         });
      });
+     if (displayBudget === 0) displayBudget = calcBudget;
+     if (calcSpent > 0 || spentAmount === 0) spentAmount = calcSpent;
   }
 
-  const progress = displayBudget > 0 ? Math.min((plan.current_saved / displayBudget) * 100, 100) : 0;
+  const progress = displayBudget > 0 ? Math.min((spentAmount / displayBudget) * 100, 100) : 0;
   const isDone = plan.status === 'completed';
 
   const daysLeft = plan.deadline
@@ -385,7 +394,7 @@ function PlanCard({ plan, onEdit, onDelete, onComplete, onClick, onViewTracking 
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs text-foreground/50">Đã tiêu / Tổng phí</span>
             <span className="text-xs font-bold text-foreground">
-              {formatNumber(plan.current_saved)} / {formatNumber(displayBudget)}
+              {formatNumber(spentAmount)} / {formatNumber(displayBudget)}
             </span>
           </div>
           <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
